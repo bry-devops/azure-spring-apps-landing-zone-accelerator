@@ -46,7 +46,7 @@ resources:
   - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
     type: github
     endpoint: bry-devops
-    name: spring-petclinic-microservices
+    name: github.com/bry-devops/spring-petclinic-microservices
     ref: main
 jobs:
   - job: deploy_hub_network
