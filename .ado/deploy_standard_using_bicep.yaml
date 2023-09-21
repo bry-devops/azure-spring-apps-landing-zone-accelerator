@@ -55,8 +55,8 @@ variables:
 #    name: github.com/bry-devops/spring-petclinic-microservices
 #    ref: main
 jobs:
-  - job: deploy_hub_network
-    displayName: Deploy 02 Hub Network
+  - job: Provision_HUB_Network
+    displayName: "Provision HUB Network"
 #    variables: 
 #      - name: workingDirectory
 #        value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
@@ -130,7 +130,7 @@ jobs:
 #          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'  
 #                                          
   - job: Deprovision_RG_HUB
-    dependsOn: []
+    dependsOn: [Provision_HUB_Network]
     condition: succeededOrFailed()
     steps:
     - task: AzureCLI@2
