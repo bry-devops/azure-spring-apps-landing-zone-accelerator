@@ -55,7 +55,7 @@ variables:
 #    name: github.com/bry-devops/spring-petclinic-microservices
 #    ref: main
 jobs:
-  - job: Provision_HUB_Network
+  - job: provision_hub_network
     displayName: "Provision HUB Network"
 #    variables: 
 #      - name: workingDirectory
@@ -81,60 +81,210 @@ jobs:
           scriptLocation: 'inlineScript'
           inlineScript: |
             az deployment sub create --name $(deploymentName) --location $(location) --template-file 02-Hub-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
-          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'
-#      - task: AzureCLI@2
-#        displayName: "Provision LZ Network"
-#        inputs:
-#          azureSubscription: $(azureServiceConnection)
-#          scriptType: 'bash'
-#          scriptLocation: 'inlineScript'
-#          inlineScript: |
-#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 03-LZ-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
-#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'
-#      - task: AzureCLI@2
-#        displayName: "Provision LZ SharedResources"
-#        inputs:
-#          azureSubscription: $(azureServiceConnection)
-#          scriptType: 'bash'
-#          scriptLocation: 'inlineScript'
-#          inlineScript: |
-#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 04-LZ-SharedResources.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
-#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep' 
+          workingDirectory: $(workingDirectory)
 
-#      - task: AzureCLI@2
-#        displayName: "Provision Hub AzureFirewall"
-#        inputs:
-#          azureSubscription: $(azureServiceConnection)
-#          scriptType: 'bash'
-#          scriptLocation: 'inlineScript'
-#          inlineScript: |
-#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 05-Hub-AzureFirewall.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
-#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'
-#      - task: AzureCLI@2
-#        displayName: "Provision LZ SpringApps Enterprise"
-#        inputs:
-#          azureSubscription: $(azureServiceConnection)
-#          scriptType: 'bash'
-#          scriptLocation: 'inlineScript'
-#          inlineScript: |
-#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Enterprise.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
-#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'  
-#      - task: AzureCLI@2
-#        displayName: "Provision LZ SpringApps Standard"
-#        inputs:
-#          azureSubscription: $(azureServiceConnection)
-#          scriptType: 'bash'
-#          scriptLocation: 'inlineScript'
-#          inlineScript: |
-#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Standard.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
-#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'  
-#                                          
-  - job: Deprovision_RG_HUB
-    dependsOn: [Provision_HUB_Network]
+  - job: provision_lz_network
+    displayName: "Provision HUB Network"
+    dependsOn: [provision_hub_network]
     condition: succeededOrFailed()
     steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Provision LZ Network"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 03-LZ-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+          workingDirectory: $(workingDirectory)
+
+  - job: provision_lz_sharedresources
+    displayName: "Provision LZ Shared Resources"
+    dependsOn: [Provision_LZ_Network]
+    condition: succeededOrFailed()
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Provision LZ SharedResources"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 04-LZ-SharedResources.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+          workingDirectory: $(workingDirectory) 
+
+  - job: provision_hub_firewall
+    displayName: "Provision HUB Firewall"
+    dependsOn: [provision_hub_network, provision_lz_sharedresources]
+    condition: succeededOrFailed()
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Provision Hub AzureFirewall"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 05-Hub-AzureFirewall.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+          workingDirectory: $(workingDirectory)
+
+  - job: provision_standard_sa
+    displayName: "Provision LZ SpringApps Standard"
+    dependsOn: [provision_hub_network, provision_lz_sharedresources, provision_hub_firewall]
+    condition: succeededOrFailed()
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Provision LZ SpringApps Standard"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Standard.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+          workingDirectory: $(workingDirectory)  
+
+  - job: deploy_petclinic_infra
+    displayName: "Deploy Pet Clinic Infrastructure"
+    dependsOn: [provision_spoke_network, provision_lz_sharedresources, provision_standard_sa]
+    condition: succeededOrFailed()
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Deploy Pet Clinic Infrastructure"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            echo 'This is not implemented yet'
+            #az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Standard.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+          workingDirectory: $(workingDirectory)
+
+  - job: build_and_deploy_pet_clinic_ms
+    displayName: "Build and Deploy Pet Clinic Microservices"
+    dependsOn: [deploy_petclinic_infra, provision_standard_sa]
+    condition: succeededOrFailed()
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Deploy Pet Clinic Infrastructure"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            echo 'This is not implemented yet'
+            #az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Standard.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+          workingDirectory: $(workingDirectory)
+
+  - job: destroy_pet_clinic_infra
+    displayName: Destroy Pet Clinic Infrastructure
+    dependsOn: [provision_spoke_network, provision_shared_resources, provision_standard_sa, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
+    condition: eq(variables['destroyStandard'], 'true')
+    steps:
     - task: AzureCLI@2
-      displayName: "Deprovision Resource Group HUB"
+      displayName: "Destroy Pet Clinic Infrastructure"
+      inputs:
+        azureSubscription: 'scSub002'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo 'This job is not implemented'
+        workingDirectory: $(workingDirectory)
+
+  - job: destroy_spring_apps_standard
+    displayName: Destroy 06 LZ Spring Apps Standard
+    dependsOn: [destroy_pet_clinic_infra,  deploy_standard_sa]
+    condition: eq(variables['destroyStandard'], 'true')
+    steps:
+    - task: AzureCLI@2
+      displayName: "Destroy 06 LZ Spring Apps Standard"
+      inputs:
+        azureSubscription: 'scSub002'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          resourceGroup=rg-$(namePrefix)-APPS
+          echo Deleting Resource Group: $resourceGroup
+          echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az group delete --name $resourceGroup -y
+        workingDirectory: $(workingDirectory)
+
+  - job: destroy_hub_firewall
+    displayName: Destroy 05 Hub Firewall
+    dependsOn: [destroy_spring_apps_standard]
+    condition: eq(variables['destroyStandard'], 'true')
+    steps:
+    - task: AzureCLI@2
+      displayName: "Destroy 05 Hub Firewall"
+      inputs:
+        azureSubscription: 'scSub002'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          resourceGroup=rg-$(namePrefix)-HUB
+          echo Deleting Resource Group: $resourceGroup
+          echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az group delete --name $resourceGroup -y
+        workingDirectory: $(workingDirectory)
+  
+  - job: destroy_shared_resources
+    displayName: Destroy 04 LZ Shared Resources
+    dependsOn: [destroy_hub_firewall]
+    condition: eq(variables['destroyStandard'], 'true')
+    steps:
+    - task: AzureCLI@2
+      displayName: "Destroy 04 LZ Shared Resources"
+      inputs:
+        azureSubscription: 'scSub002'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          resourceGroup=rg-$(namePrefix)-SHARED
+          echo Deleting Resource Group: $resourceGroup
+          echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az group delete --name $resourceGroup -y
+        workingDirectory: $(workingDirectory)    
+
+  - job: destroy_spoke_network
+    displayName: Destroy 03 LZ Network
+    dependsOn: [destroy_shared_resources]
+    condition: eq(variables['destroyStandard'], 'true')
+    steps:
+    - task: AzureCLI@2
+      displayName: "Destroy 03 LZ Network"
+      inputs:
+        azureSubscription: 'scSub002'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          resourceGroup=rg-$(namePrefix)-SPOKE
+          echo Deleting Resource Group: $resourceGroup
+          echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az group delete --name $resourceGroup -y
+        workingDirectory: $(workingDirectory)
+
+  - job: destroy_hub_network
+    displayName: Destroy 02 Hub Network
+    dependsOn: [destroy_spoke_network]
+    condition: eq(variables['destroyStandard'], 'true')
+    steps:
+    - task: AzureCLI@2
+      displayName: "Destroy 02 Hub Network"
       inputs:
         azureSubscription: 'scSub002'
         scriptType: 'bash'
