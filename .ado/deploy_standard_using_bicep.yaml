@@ -41,13 +41,13 @@ variables:
   - name : azureServiceConnection
     value : 'scSub002'
 
-resources:
-  repositories:
-  - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
-    type: github
-    endpoint: bry-devops
-    name: github.com/bry-devops/spring-petclinic-microservices
-    ref: main
+#resources:
+#  repositories:
+#  - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
+#    type: github
+#    endpoint: bry-devops
+#    name: github.com/bry-devops/spring-petclinic-microservices
+#    ref: main
 jobs:
   - job: deploy_hub_network
     displayName: Deploy 02 Hub Network
