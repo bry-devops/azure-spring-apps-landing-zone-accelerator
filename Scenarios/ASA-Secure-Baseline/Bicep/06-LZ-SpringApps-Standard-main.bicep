@@ -186,8 +186,24 @@ param springAppsRuntimeCidr string
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
+module firewall '05-Hub-AzureFirewall/main.bicep' = {
+  name: '${timeStamp}-firewall'
+  params: {
+    azureFirewallName: azureFirewallName
+    azureFirewallSubnetPrefix: azureFirewallSubnetPrefix
+    createFirewall: deployFirewall && firewallIp == ''
+    hubVnetName: hubVnetName
+    hubVnetRgName: hubVnetRgName
+    location: location
+    sharedSubnetPrefix: sharedSubnetPrefix
+    springAppsRuntimeSubnetPrefix: springAppsRuntimeSubnetPrefix
+    springAppsSubnetPrefix: springAppsSubnetPrefix
+    tags: tags
+    timeStamp: timeStamp
+  }
+}
 
-module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' = if(tier == 'Standard') {
+module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' {
   name: '${timeStamp}-spring-apps-standard'
   params: {
     appGwSubnetPrefix: appGwSubnetPrefix
@@ -223,4 +239,7 @@ module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' = if(tier == 'S
     tags: tags
     timeStamp: timeStamp
   }
+  dependsOn: [
+    firewall
+  ]
 }
