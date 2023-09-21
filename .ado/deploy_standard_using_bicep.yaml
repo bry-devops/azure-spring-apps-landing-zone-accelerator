@@ -57,12 +57,6 @@ variables:
 jobs:
   - job: provision_hub_network
     displayName: "Provision HUB Network"
-#    variables: 
-#      - name: workingDirectory
-#        value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
-#    pool: 
-#      vmImage: 'ubuntu-latest'
-
     steps:
       - checkout: self
 
