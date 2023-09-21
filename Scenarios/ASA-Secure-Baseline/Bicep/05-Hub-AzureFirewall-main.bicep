@@ -201,7 +201,4 @@ module firewall '05-Hub-AzureFirewall/main.bicep' = {
     tags: tags
     timeStamp: timeStamp
   }
-  dependsOn: [
-    lzNetwork
-  ]
 }

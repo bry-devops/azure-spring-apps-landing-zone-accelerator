@@ -222,8 +222,4 @@ module springAppsEnterprise '06-LZ-SpringApps-Enterprise/main.bicep' = if(tier =
     tags: tags
     timeStamp: timeStamp
   }
-  dependsOn: [
-    sharedResources
-    firewall
-  ]
 }

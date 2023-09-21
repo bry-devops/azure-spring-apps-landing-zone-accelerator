@@ -216,7 +216,4 @@ module lzNetwork '03-LZ-Network/main.bicep' = {
     tags: tags
     timeStamp: timeStamp
   }
-  dependsOn: [
-    hub
-  ]
 }

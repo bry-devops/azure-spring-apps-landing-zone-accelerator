@@ -223,8 +223,4 @@ module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' = if(tier == 'S
     tags: tags
     timeStamp: timeStamp
   }
-  dependsOn: [
-    sharedResources
-    firewall
-  ]
 }

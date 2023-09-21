@@ -207,8 +207,5 @@ module sharedResources '04-LZ-SharedResources/main.bicep' = {
     vmName: vmName
     vmSize: vmSize
   }
-  dependsOn: [
-    lzNetwork
-  ]
 }
 
