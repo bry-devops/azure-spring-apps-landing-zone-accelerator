@@ -30,8 +30,6 @@ variables:
     value: "false"
   - name: region
     value: "eastus"
-  - name: namePrefix
-    value: "springlza"
   - name: environment
     value: "dev"
   - name: jumpBoxUsername
@@ -40,6 +38,7 @@ variables:
     value: "mySqlAdmin"
   - name : azureServiceConnection
     value : 'scSub002'
+  - group : lza-dev
 
 #resources:
 #  repositories:
@@ -68,12 +67,75 @@ jobs:
           scriptLocation: 'inlineScript'
           inlineScript: 'az --version'
       - task: AzureCLI@2
-        displayName: "Resource Provision Using Bicep"
+        displayName: "Provision Hub Network"
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            echo "hello"
-            #az deployment sub create --name $(deploymentName) --location $(location) --template-file $(templateFile) --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
-          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep/Deployment'
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 02-Hub-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'
+#      - task: AzureCLI@2
+#        displayName: "Provision LZ Network"
+#        inputs:
+#          azureSubscription: $(azureServiceConnection)
+#          scriptType: 'bash'
+#          scriptLocation: 'inlineScript'
+#          inlineScript: |
+#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 03-LZ-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'
+#      - task: AzureCLI@2
+#        displayName: "Provision LZ SharedResources"
+#        inputs:
+#          azureSubscription: $(azureServiceConnection)
+#          scriptType: 'bash'
+#          scriptLocation: 'inlineScript'
+#          inlineScript: |
+#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 04-LZ-SharedResources.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep' 
+
+#      - task: AzureCLI@2
+#        displayName: "Provision Hub AzureFirewall"
+#        inputs:
+#          azureSubscription: $(azureServiceConnection)
+#          scriptType: 'bash'
+#          scriptLocation: 'inlineScript'
+#          inlineScript: |
+#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 05-Hub-AzureFirewall.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'
+#      - task: AzureCLI@2
+#        displayName: "Provision LZ SpringApps Enterprise"
+#        inputs:
+#          azureSubscription: $(azureServiceConnection)
+#          scriptType: 'bash'
+#          scriptLocation: 'inlineScript'
+#          inlineScript: |
+#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Enterprise.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'  
+#      - task: AzureCLI@2
+#        displayName: "Provision LZ SpringApps Standard"
+#        inputs:
+#          azureSubscription: $(azureServiceConnection)
+#          scriptType: 'bash'
+#          scriptLocation: 'inlineScript'
+#          inlineScript: |
+#            az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Standard.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+#          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'  
+#                                          
+  - job: Deprovision_RG_HUB
+    dependsOn: [Deprovision_RG_SPOKE]
+    condition: succeededOrFailed()
+    steps:
+    - task: AzureCLI@2
+      displayName: "Deprovision Resource Group HUB"
+      inputs:
+        azureSubscription: 'scSub002'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          resourceGroup=rg-$(namePrefix)-HUB
+          echo Deleting Resource Group: $resourceGroup
+          echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az group delete --name $resourceGroup -y
+        workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep/Deployment'
