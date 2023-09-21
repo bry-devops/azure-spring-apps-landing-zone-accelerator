@@ -74,7 +74,7 @@ jobs:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az deployment sub create --name $(deploymentName) --location $(location) --template-file 02-Hub-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) jumpHostPassword=$(jumpHostPassword)
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 02-Hub-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix)
           workingDirectory: $(workingDirectory)
 
   - job: provision_spoke_network
@@ -90,7 +90,7 @@ jobs:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az deployment sub create --name $(deploymentName) --location $(location) --template-file 03-LZ-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 03-LZ-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId)
           workingDirectory: $(workingDirectory)
 
   - job: provision_sharedresources
@@ -106,7 +106,7 @@ jobs:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az deployment sub create --name $(deploymentName) --location $(location) --template-file 04-LZ-SharedResources-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 04-LZ-SharedResources-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) jumpHostPassword=$(jumpHostPassword)
           workingDirectory: $(workingDirectory) 
 
   - job: provision_hub_firewall
@@ -122,7 +122,7 @@ jobs:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az deployment sub create --name $(deploymentName) --location $(location) --template-file 05-Hub-AzureFirewall-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 05-Hub-AzureFirewall-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix)
           workingDirectory: $(workingDirectory)
 
   - job: provision_standard_sa
@@ -138,7 +138,7 @@ jobs:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Standard-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Standard-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId)
           workingDirectory: $(workingDirectory)  
 
   - job: deploy_pet_clinic_infra
