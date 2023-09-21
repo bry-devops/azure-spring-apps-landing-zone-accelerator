@@ -77,7 +77,7 @@ jobs:
             az deployment sub create --name $(deploymentName) --location $(location) --template-file 02-Hub-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
           workingDirectory: $(workingDirectory)
 
-  - job: provision_lz_network
+  - job: provision_spoke_network
     displayName: "Provision HUB Network"
     dependsOn: [provision_hub_network]
     condition: succeededOrFailed()
@@ -94,9 +94,9 @@ jobs:
             az deployment sub create --name $(deploymentName) --location $(location) --template-file 03-LZ-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
           workingDirectory: $(workingDirectory)
 
-  - job: provision_lz_sharedresources
+  - job: provision_sharedresources
     displayName: "Provision LZ Shared Resources"
-    dependsOn: [Provision_LZ_Network]
+    dependsOn: [provision_spoke_network]
     condition: succeededOrFailed()
     steps:
       - checkout: self
@@ -113,7 +113,7 @@ jobs:
 
   - job: provision_hub_firewall
     displayName: "Provision HUB Firewall"
-    dependsOn: [provision_hub_network, provision_lz_sharedresources]
+    dependsOn: [provision_hub_network, provision_sharedresources]
     condition: succeededOrFailed()
     steps:
       - checkout: self
@@ -130,7 +130,7 @@ jobs:
 
   - job: provision_standard_sa
     displayName: "Provision LZ SpringApps Standard"
-    dependsOn: [provision_hub_network, provision_lz_sharedresources, provision_hub_firewall]
+    dependsOn: [provision_hub_network, provision_sharedresources, provision_hub_firewall]
     condition: succeededOrFailed()
     steps:
       - checkout: self
@@ -147,7 +147,7 @@ jobs:
 
   - job: deploy_petclinic_infra
     displayName: "Deploy Pet Clinic Infrastructure"
-    dependsOn: [provision_spoke_network, provision_lz_sharedresources, provision_standard_sa]
+    dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
     condition: succeededOrFailed()
     steps:
       - checkout: self
@@ -183,7 +183,7 @@ jobs:
 
   - job: destroy_pet_clinic_infra
     displayName: Destroy Pet Clinic Infrastructure
-    dependsOn: [provision_spoke_network, provision_shared_resources, provision_standard_sa, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
+    dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
     condition: eq(variables['destroyStandard'], 'true')
     steps:
     - task: AzureCLI@2
@@ -198,7 +198,7 @@ jobs:
 
   - job: destroy_spring_apps_standard
     displayName: Destroy 06 LZ Spring Apps Standard
-    dependsOn: [destroy_pet_clinic_infra,  deploy_standard_sa]
+    dependsOn: [destroy_pet_clinic_infra,  provision_standard_sa]
     condition: eq(variables['destroyStandard'], 'true')
     steps:
     - task: AzureCLI@2
