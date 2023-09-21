@@ -74,13 +74,12 @@ jobs:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az deployment sub create --name $(deploymentName) --location $(location) --template-file 02-Hub-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file 02-Hub-Network-main.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) jumpHostPassword=$(jumpHostPassword)
           workingDirectory: $(workingDirectory)
 
   - job: provision_spoke_network
     displayName: "Provision Spoke Network"
     dependsOn: [provision_hub_network]
-    condition: succeededOrFailed()
     steps:
       - checkout: self
 
@@ -97,7 +96,6 @@ jobs:
   - job: provision_sharedresources
     displayName: "Provision LZ Shared Resources"
     dependsOn: [provision_spoke_network]
-    condition: succeededOrFailed()
     steps:
       - checkout: self
 
@@ -114,7 +112,6 @@ jobs:
   - job: provision_hub_firewall
     displayName: "Provision HUB Firewall"
     dependsOn: [provision_hub_network, provision_sharedresources]
-    condition: succeededOrFailed()
     steps:
       - checkout: self
 
@@ -131,7 +128,6 @@ jobs:
   - job: provision_standard_sa
     displayName: "Provision LZ SpringApps Standard"
     dependsOn: [provision_hub_network, provision_sharedresources, provision_hub_firewall]
-    condition: succeededOrFailed()
     steps:
       - checkout: self
 
@@ -148,7 +144,6 @@ jobs:
   - job: deploy_pet_clinic_infra
     displayName: "Deploy Pet Clinic Infrastructure"
     dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
-    condition: succeededOrFailed()
     steps:
       - checkout: self
 
@@ -166,7 +161,6 @@ jobs:
   - job: build_and_deploy_pet_clinic_ms
     displayName: "Build and Deploy Pet Clinic Microservices"
     dependsOn: [deploy_pet_clinic_infra, provision_standard_sa]
-    condition: succeededOrFailed()
     steps:
       - checkout: self
 
