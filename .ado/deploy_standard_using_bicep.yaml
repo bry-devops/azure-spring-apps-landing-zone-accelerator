@@ -145,7 +145,7 @@ jobs:
             az deployment sub create --name $(deploymentName) --location $(location) --template-file 06-LZ-SpringApps-Standard.bicep --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
           workingDirectory: $(workingDirectory)  
 
-  - job: deploy_petclinic_infra
+  - job: deploy_pet_clinic_infra
     displayName: "Deploy Pet Clinic Infrastructure"
     dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
     condition: succeededOrFailed()
@@ -165,7 +165,7 @@ jobs:
 
   - job: build_and_deploy_pet_clinic_ms
     displayName: "Build and Deploy Pet Clinic Microservices"
-    dependsOn: [deploy_petclinic_infra, provision_standard_sa]
+    dependsOn: [deploy_pet_clinic_infra, provision_standard_sa]
     condition: succeededOrFailed()
     steps:
       - checkout: self
