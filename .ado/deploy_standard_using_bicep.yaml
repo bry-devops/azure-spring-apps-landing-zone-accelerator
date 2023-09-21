@@ -1,0 +1,79 @@
+# ADO Pipeline
+name: Azure Springs Apps LZA Deployment
+
+trigger: none
+
+variables:
+  - name: adminServer
+    value: admin-server
+  - name: apiGateway
+    value: api-gateway
+  - name: customerService
+    value: customers-service
+  - name: vetsService
+    value: vets-service
+  - name: visitsService
+    value: visits-service
+  - name: apiGatewayJar
+    value: "spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-3.0.1.jar"
+  - name: adminServerJar
+    value: "spring-petclinic-admin-server/target/spring-petclinic-admin-server-3.0.1.jar"
+  - name: customersServiceJar
+    value: "spring-petclinic-customers-service/target/spring-petclinic-customers-service-3.0.1.jar"
+  - name: vetsServiceJar
+    value: "spring-petclinic-vets-service/target/spring-petclinic-vets-service-3.0.1.jar" 
+  - name: visitsServiceJar
+    value: "spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar" 
+  - name: deployFirewallStandard
+    value: "false"
+  - name: destroyStandard
+    value: "false"
+  - name: region
+    value: "eastus"
+  - name: namePrefix
+    value: "springlza"
+  - name: environment
+    value: "dev"
+  - name: jumpBoxUsername
+    value: "ltzadmin"
+  - name: mySQLAdminUsername
+    value: "mySqlAdmin"
+  - group: "Standard Deployment Configuration"
+  - name : azureServiceConnection
+    value : 'scSub002'
+
+resources:
+  repositories:
+  - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
+    type: github
+    endpoint: <Add your GitHub service connection name here>
+    name: Azure-Samples/spring-petclinic-microservices
+    ref: main
+jobs:
+  - job: deploy_hub_network
+    displayName: Deploy 02 Hub Network
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Provision Various Resources"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: 'az --version'
+      - task: AzureCLI@2
+        displayName: "Resource Provision Using Bicep"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment sub create --name $(deploymentName) --location $(location) --template-file $(templateFile) --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
+          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep/Deployment'
