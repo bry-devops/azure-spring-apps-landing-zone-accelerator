@@ -3,6 +3,9 @@ name: Azure Springs Apps LZA Deployment
 
 trigger: none
 
+pool: 
+  vmImage: 'ubuntu-latest'
+
 variables:
   - name: adminServer
     value: admin-server
@@ -39,6 +42,10 @@ variables:
   - name : azureServiceConnection
     value : 'scSub002'
   - group : lza-dev
+  - name : workingDirectory
+    value : "Scenarios/ASA-Secure-Baseline/Bicep"
+  - name : deleteTemplateFile
+    value: "empty.bicep"
 
 #resources:
 #  repositories:
@@ -50,11 +57,11 @@ variables:
 jobs:
   - job: deploy_hub_network
     displayName: Deploy 02 Hub Network
-    variables: 
-      - name: workingDirectory
-        value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
-    pool: 
-      vmImage: 'ubuntu-latest'
+#    variables: 
+#      - name: workingDirectory
+#        value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
+#    pool: 
+#      vmImage: 'ubuntu-latest'
 
     steps:
       - checkout: self
@@ -138,4 +145,4 @@ jobs:
           echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
           az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
           az group delete --name $resourceGroup -y
-        workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep/Deployment'
+        workingDirectory: $(workingDirectory)
