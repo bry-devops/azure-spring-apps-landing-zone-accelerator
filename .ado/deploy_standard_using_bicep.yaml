@@ -130,7 +130,7 @@ jobs:
 #          workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep'  
 #                                          
   - job: Deprovision_RG_HUB
-    dependsOn: [Deprovision_RG_SPOKE]
+    dependsOn: []
     condition: succeededOrFailed()
     steps:
     - task: AzureCLI@2
