@@ -75,6 +75,6 @@ jobs:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-          echo "hello"
+            echo "hello"
             #az deployment sub create --name $(deploymentName) --location $(location) --template-file $(templateFile) --parameters $(paramFile) location=$(location) namePrefix=$(namePrefix) principalId=$(servicePrincipalId) tier=$(tier) jumpHostPassword=$(jumpHostPassword)
           workingDirectory: 'Scenarios/ASA-Secure-Baseline/Bicep/Deployment'
