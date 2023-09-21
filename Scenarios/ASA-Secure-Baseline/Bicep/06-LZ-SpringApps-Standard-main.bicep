@@ -203,7 +203,7 @@ module firewall '05-Hub-AzureFirewall/main.bicep' = {
   }
 }
 
-module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' {
+module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' = {
   name: '${timeStamp}-spring-apps-standard'
   params: {
     appGwSubnetPrefix: appGwSubnetPrefix
