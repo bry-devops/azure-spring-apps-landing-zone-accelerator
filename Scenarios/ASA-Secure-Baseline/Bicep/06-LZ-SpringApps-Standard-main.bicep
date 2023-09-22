@@ -72,7 +72,7 @@ param appRgName string = 'rg-${namePrefix}-APPS'
 /**
 #param springAppsName string = length('${namePrefix}-${environment}') > 20 ? 'spring-${toLower(substring('${namePrefix}-${environment}', 0, 20))}-${substring(uniqueString(namePrefix), 0, 4)}' : 'spring-${toLower('${namePrefix}-${environment}')}-${substring(uniqueString(namePrefix), 0, 4)}'
 */
-param springAppsName string = 'rg-${namePrefix}-APPS-Instance'
+param springAppsName string = 'rg-${namePrefix}-apps-instance'
 
 @description('Name of the resource group that Spring Apps creates for its runtime. Specify this value in the parameters.json file to override this default.')
 param serviceRuntimeNetworkResourceGroup string = '${springAppsName}-runtime-rg'
