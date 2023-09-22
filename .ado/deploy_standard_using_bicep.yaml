@@ -160,7 +160,7 @@ jobs:
       - checkout: self
 
       - task: AzureCLI@2
-        displayName: "Deploy Pet Clinic Infrastructure"
+        displayName: "Deploy spring app $(apiGateway)"
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
@@ -168,11 +168,53 @@ jobs:
           inlineScript: |
             echo 'Creating Spring App for $(apiGateway)'
             az spring app create -n $(apiGateway) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
-            echo 'Creating Spring App for $(customerService)'
-            az spring app create -n $(customerService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+            #echo 'Creating Spring App for $(customerService)'
+            #az spring app create -n $(customerService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
           workingDirectory: $(workingDirectory)
 
- 
+      - task: AzureCLI@2
+        displayName: "Deploy Spring App $(customerService)"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            echo 'Creating Spring App for $(customerService)'
+            az spring app create -n $(customerService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+          workingDirectory: $(workingDirectory) 
+
+      - task: AzureCLI@2
+        displayName: "Deploy Spring App $(adminServer)"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            echo 'Creating Spring App for $(adminServer)'
+            az spring app create -n $(adminServer) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+          workingDirectory: $(workingDirectory) 
+      - task: AzureCLI@2
+        displayName: "Deploy Spring App $(vetsService)"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            echo 'Creating Spring App for $(vetsService)'
+            az spring app create -n $(vetsService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+          workingDirectory: $(workingDirectory) 
+
+      - task: AzureCLI@2
+        displayName: "Deploy Spring App $(visitsService)"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            echo 'Creating Spring App for $(visitsService)'
+            az spring app create -n $(visitsService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+          workingDirectory: $(workingDirectory) 
+
   - job: build_and_deploy_pet_clinic_ms
     displayName: Build and Deploy Pet Clinic Microservices
     #dependsOn: [deploy_pet_clinic_infra, provision_standard_sa ]
@@ -181,45 +223,6 @@ jobs:
     steps:
 #      - checkout: pet-clinic-microservices
 #        path: pet-clinic
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          buildType: 'specific'
-          project: '890a29bf-c2f0-456a-b797-d55b19415604'
-          definition: '32'
-          buildVersionToDownload: 'latest'
-          artifactName: 'drop'
-          targetPath: '$(Pipeline.Workspace)'
-#      - task: Maven@4
-#        inputs:
-#          mavenPomFile: 'pom.xml'
-#          mavenOptions: '-Xmx3072m'
-#          javaHomeOption: 'JDKVersion'
-#          jdkVersionOption: '1.17'
-#          jdkArchitectureOption: 'x64'
-#          mavenVersionOption: Default
-#          publishJUnitResults: true
-#          testResultsFiles: '**/TEST-*.xml'
-#          goals: 'package'
-#      
-#      - bash: mvn clean package -DskipTests
-#
-
-#      - task: CopyFiles@2
-#        displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-#        inputs:
-#          SourceFolder: '$(system.defaultworkingdirectory)'
-#          Contents: '**/target/*.?(war|jar)'
-#          TargetFolder: '$(build.artifactstagingdirectory)'
-#        condition: succeededOrFailed()
-
-#      - task: PublishBuildArtifacts@1
-#        displayName: 'Publish Artifact'
-#        inputs:
-#          PathtoPublish: '$(build.artifactstagingdirectory)'
-#          ArtifactName: drop
-#        condition: succeededOrFailed()
-#      
-#      - bash: ls $(build.artifactstagingdirectory)
 
       - task: AzureCLI@2
         displayName: Install Azure CLI Spring Extension
@@ -232,11 +235,15 @@ jobs:
             az extension add --name spring -y
             az spring list -o table
           addSpnToEnvironment: true 
-#      - task: DownloadPipelineArtifact@2
-#        displayName: 'Download Pipeline Artifact'
-#        inputs:
-#          artifactName: drop
-#          buildType: 'current'
+
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'specific'
+          project: '890a29bf-c2f0-456a-b797-d55b19415604'
+          definition: '32'
+          buildVersionToDownload: 'latest'
+          artifactName: 'drop'
+          targetPath: '$(Pipeline.Workspace)'
 
       - bash: ls $(Pipeline.Workspace)
   
@@ -285,36 +292,36 @@ jobs:
               --jvm-options='-Xms2048m -Xmx2048m' \
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
-#      - task: AzureCLI@2
-#        displayName:  Deploy vets-service
-#        inputs:
-#          azureSubscription: $(azureServiceConnection)
-#          scriptLocation: inlineScript
-#          scriptType: bash
-#          inlineScript: |
-#            az spring app deploy \
-#              --resource-group $(spring_apps_rg) \
-#              --service $(spring_apps_service_name) \
-#              --name $(vetsService) \
-#              --artifact-path $(Pipeline.Workspace)/$(vetsServiceJar) \
-#              --jvm-options='-Xms2048m -Xmx2048m' \
-#              --env SPRING_PROFILES_ACTIVE=passwordless
-#          addSpnToEnvironment: true 
-#      - task: AzureCLI@2
-#        displayName:  Deploy visits-service
-#        inputs:
-#          azureSubscription: $(azureServiceConnection)
-#          scriptLocation: inlineScript
-#          scriptType: bash
-#          inlineScript: |
-#            az spring app deploy \
-#              --resource-group $(spring_apps_rg) \
-#              --service $(spring_apps_service_name) \
-#              --name $(visitsService) \
-#              --artifact-path $(Pipeline.Workspace)/$(visitsServiceJar) \
-#              --jvm-options='-Xms2048m -Xmx2048m' \
-#              --env SPRING_PROFILES_ACTIVE=passwordless
-#          addSpnToEnvironment: true 
+      - task: AzureCLI@2
+        displayName:  Deploy vets-service
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            az spring app deploy \
+              --resource-group $(spring_apps_rg) \
+              --service $(spring_apps_service_name) \
+              --name $(vetsService) \
+              --artifact-path $(Pipeline.Workspace)/$(vetsServiceJar) \
+              --jvm-options='-Xms2048m -Xmx2048m' \
+              --env SPRING_PROFILES_ACTIVE=passwordless
+          addSpnToEnvironment: true 
+      - task: AzureCLI@2
+        displayName:  Deploy visits-service
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            az spring app deploy \
+              --resource-group $(spring_apps_rg) \
+              --service $(spring_apps_service_name) \
+              --name $(visitsService) \
+              --artifact-path $(Pipeline.Workspace)/$(visitsServiceJar) \
+              --jvm-options='-Xms2048m -Xmx2048m' \
+              --env SPRING_PROFILES_ACTIVE=passwordless
+          addSpnToEnvironment: true 
 
 
   - job: destroy_pet_clinic_infra
