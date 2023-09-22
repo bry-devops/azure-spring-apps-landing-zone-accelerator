@@ -145,31 +145,285 @@ stages:
     dependsOn:  provision_infrastructure
     condition: succeeded()
     jobs:
-    - job: deploy_app
+    - job: deploy_pet_clinic_infra
+      displayName: "Deploy Pet Clinic Spring App"
+      dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
       steps:
-      - task: AzureCLI@2
-        displayName: Preview Bicep Changes
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            az --version
+        - checkout: self
+        - task: AzureCLI@2
+          displayName: "Deploy spring app $(apiGateway)"
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              echo 'Creating Spring App for $(apiGateway)'
+              az spring app create -n $(apiGateway) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+              #echo 'Creating Spring App for $(customerService)'
+              #az spring app create -n $(customerService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+            workingDirectory: $(workingDirectory)
+        - task: AzureCLI@2
+          displayName: "Deploy Spring App $(customerService)"
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              echo 'Creating Spring App for $(customerService)'
+              az spring app create -n $(customerService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+            workingDirectory: $(workingDirectory) 
+        - task: AzureCLI@2
+          displayName: "Deploy Spring App $(adminServer)"
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              echo 'Creating Spring App for $(adminServer)'
+              az spring app create -n $(adminServer) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+            workingDirectory: $(workingDirectory) 
+        - task: AzureCLI@2
+          displayName: "Deploy Spring App $(vetsService)"
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              echo 'Creating Spring App for $(vetsService)'
+              az spring app create -n $(vetsService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+            workingDirectory: $(workingDirectory) 
+        - task: AzureCLI@2
+          displayName: "Deploy Spring App $(visitsService)"
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              echo 'Creating Spring App for $(visitsService)'
+              az spring app create -n $(visitsService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+            workingDirectory: $(workingDirectory) 
+    - job: build_and_deploy_pet_clinic_ms
+      displayName: Build and Deploy Pet Clinic Microservices
+      dependsOn: [deploy_pet_clinic_infra, provision_standard_sa ]
+      #dependsOn: [deploy_pet_clinic_infra ]
+      pool: 
+        vmImage: 'ubuntu-latest'
+      steps:
+        - task: AzureCLI@2
+          displayName: Install Azure CLI Spring Extension
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptLocation: inlineScript
+            scriptType: bash
+            inlineScript: |
+              set -eu
+              az extension add --name spring -y
+              az spring list -o table
+            addSpnToEnvironment: true 
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            buildType: 'specific'
+            project: '890a29bf-c2f0-456a-b797-d55b19415604'
+            definition: '32'
+            buildVersionToDownload: 'latest'
+            artifactName: 'drop'
+            targetPath: '$(Pipeline.Workspace)'
+        - bash: ls $(Pipeline.Workspace)
+        - task: AzureCLI@2
+          displayName: Deploy api-gateway
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptLocation: inlineScript
+            scriptType: bash
+            inlineScript: |
+              az spring app deploy \
+                --resource-group $(spring_apps_rg) \
+                --service $(spring_apps_service_name) \
+                --name $(apiGateway) \
+                --artifact-path $(Pipeline.Workspace)/$(apiGatewayJar) \
+                --jvm-options='-Xms2048m -Xmx2048m' \
+                --env SPRING_PROFILES_ACTIVE=passwordless
+            addSpnToEnvironment: true 
+        - task: AzureCLI@2
+          displayName: Deploy admin-server
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptLocation: inlineScript
+            scriptType: bash
+            inlineScript: |
+              az spring app deploy \
+                --resource-group $(spring_apps_rg) \
+                --service $(spring_apps_service_name) \
+                --name $(adminServer) \
+                --artifact-path $(Pipeline.Workspace)/$(adminServerJar) \
+                --jvm-options='-Xms2048m -Xmx2048m' \
+                --env SPRING_PROFILES_ACTIVE=passwordless
+            addSpnToEnvironment: true 
+        - task: AzureCLI@2
+          displayName:  Deploy customers-service
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptLocation: inlineScript
+            scriptType: bash
+            inlineScript: |
+              az spring app deploy \
+                --resource-group $(spring_apps_rg) \
+                --service $(spring_apps_service_name) \
+                --name $(customerService) \
+                --artifact-path $(Pipeline.Workspace)/$(customersServiceJar) \
+                --jvm-options='-Xms2048m -Xmx2048m' \
+                --env SPRING_PROFILES_ACTIVE=passwordless
+            addSpnToEnvironment: true 
+        - task: AzureCLI@2
+          displayName:  Deploy vets-service
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptLocation: inlineScript
+            scriptType: bash
+            inlineScript: |
+              az spring app deploy \
+                --resource-group $(spring_apps_rg) \
+                --service $(spring_apps_service_name) \
+                --name $(vetsService) \
+                --artifact-path $(Pipeline.Workspace)/$(vetsServiceJar) \
+                --jvm-options='-Xms2048m -Xmx2048m' \
+                --env SPRING_PROFILES_ACTIVE=passwordless
+            addSpnToEnvironment: true 
+        - task: AzureCLI@2
+          displayName:  Deploy visits-service
+          continueOnError: true
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptLocation: inlineScript
+            scriptType: bash
+            inlineScript: |
+              az spring app deploy \
+                --resource-group $(spring_apps_rg) \
+                --service $(spring_apps_service_name) \
+                --name $(visitsService) \
+                --artifact-path $(Pipeline.Workspace)/$(visitsServiceJar) \
+                --jvm-options='-Xms2048m -Xmx2048m' \
+                --env SPRING_PROFILES_ACTIVE=passwordless
+            addSpnToEnvironment: true 
+
 
   - stage: deprovision_infrastructure
     displayName: "Deprovision Infrastrcture"
     dependsOn: deploy_spring_app
     condition: succeeded()
     jobs:
-    - job: destory_infra
+    - job: destroy_pet_clinic_infra
+      displayName: Destroy Pet Clinic Infrastructure
+      dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
+      condition: eq(variables['destroyStandard'], 'true')
       steps:
       - task: AzureCLI@2
-        displayName: Preview Bicep Changes
+        displayName: "Destroy Pet Clinic Infrastructure"
         inputs:
-          azureSubscription: $(azureServiceConnection)
+          azureSubscription: 'scSub002'
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az --version
+            echo 'This job is not implemented'
+          workingDirectory: $(workingDirectory)
+    - job: destroy_spring_apps_standard
+      displayName: Destroy 06 LZ Spring Apps Standard
+      dependsOn: [destroy_pet_clinic_infra,  provision_standard_sa]
+      condition: eq(variables['destroyStandard'], 'true')
+      steps:
+      - task: AzureCLI@2
+        displayName: "Destroy 06 LZ Spring Apps Standard"
+        inputs:
+          azureSubscription: 'scSub002'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            resourceGroup=rg-$(namePrefix)-APPS
+            echo Deleting Resource Group: $resourceGroup
+            echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az group delete --name $resourceGroup -y
+          workingDirectory: $(workingDirectory)
+    - job: destroy_hub_firewall
+      displayName: Destroy 05 Hub Firewall
+      dependsOn: [destroy_spring_apps_standard]
+      condition: eq(variables['destroyStandard'], 'true')
+      steps:
+      - task: AzureCLI@2
+        displayName: "Destroy 05 Hub Firewall"
+        inputs:
+          azureSubscription: 'scSub002'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            resourceGroup=rg-$(namePrefix)-HUB
+            echo Deleting Resource Group: $resourceGroup
+            echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az group delete --name $resourceGroup -y
+          workingDirectory: $(workingDirectory)
+    - job: destroy_shared_resources
+      displayName: Destroy 04 LZ Shared Resources
+      dependsOn: [destroy_hub_firewall]
+      condition: eq(variables['destroyStandard'], 'true')
+      steps:
+      - task: AzureCLI@2
+        displayName: "Destroy 04 LZ Shared Resources"
+        inputs:
+          azureSubscription: 'scSub002'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            resourceGroup=rg-$(namePrefix)-SHARED
+            echo Deleting Resource Group: $resourceGroup
+            echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az group delete --name $resourceGroup -y
+          workingDirectory: $(workingDirectory)    
+    - job: destroy_spoke_network
+      displayName: Destroy 03 LZ Network
+      dependsOn: [destroy_shared_resources]
+      condition: eq(variables['destroyStandard'], 'true')
+      steps:
+      - task: AzureCLI@2
+        displayName: "Destroy 03 LZ Network"
+        inputs:
+          azureSubscription: 'scSub002'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            resourceGroup=rg-$(namePrefix)-SPOKE
+            echo Deleting Resource Group: $resourceGroup
+            echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az group delete --name $resourceGroup -y
+          workingDirectory: $(workingDirectory)
+    - job: destroy_hub_network
+      displayName: Destroy Hub Network
+      dependsOn: [destroy_spring_apps_standard]
+      condition: eq(variables['destroyStandard'], 'true')
+      steps:
+      - task: AzureCLI@2
+        displayName: "Destroy  Hub Network"
+        inputs:
+          azureSubscription: 'scSub002'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            resourceGroup=rg-$(namePrefix)-HUB
+            echo Deleting Resource Group: $resourceGroup
+            echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az group delete --name $resourceGroup -y
+          workingDirectory: $(workingDirectory)
 
 
