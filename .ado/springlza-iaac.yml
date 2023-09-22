@@ -209,9 +209,9 @@ stages:
               echo 'Creating Spring App for $(visitsService)'
               az spring app create -n $(visitsService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
             workingDirectory: $(workingDirectory) 
-    - job: build_and_deploy_pet_clinic_ms
+    - job: deploy_pet_clinic_ms
       displayName: Build and Deploy Pet Clinic Microservices
-      dependsOn: [deploy_pet_clinic_infra, provision_standard_sa ]
+      #dependsOn: [deploy_pet_clinic_infra, provision_standard_sa ]
       #dependsOn: [deploy_pet_clinic_infra ]
       pool: 
         vmImage: 'ubuntu-latest'
