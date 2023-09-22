@@ -18,15 +18,15 @@ variables:
   - name: visitsService
     value: visits-service
   - name: apiGatewayJar
-    value: "pet-clinic/spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-3.0.1.jar"
+    value: "spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-3.0.1.jar"
   - name: adminServerJar
-    value: "pet-clinic/spring-petclinic-admin-server/target/spring-petclinic-admin-server-3.0.1.jar"
+    value: "spring-petclinic-admin-server/target/spring-petclinic-admin-server-3.0.1.jar"
   - name: customersServiceJar
-    value: "pet-clinic/spring-petclinic-customers-service/target/spring-petclinic-customers-service-3.0.1.jar"
+    value: "spring-petclinic-customers-service/target/spring-petclinic-customers-service-3.0.1.jar"
   - name: vetsServiceJar
-    value: "pet-clinic/spring-petclinic-vets-service/target/spring-petclinic-vets-service-3.0.1.jar" 
+    value: "spring-petclinic-vets-service/target/spring-petclinic-vets-service-3.0.1.jar" 
   - name: visitsServiceJar
-    value: "pet-clinic/spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar" 
+    value: "spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar" 
   - name: deployFirewallStandard
     value: "false"
   - name: destroyStandard
@@ -199,6 +199,24 @@ jobs:
           goals: 'package'
       
       - bash: mvn clean package -DskipTests
+
+      - task: CopyFiles@2
+        displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+        inputs:
+          SourceFolder: '$(system.defaultworkingdirectory)'
+          Contents: '**/target/*.?(war|jar)'
+          TargetFolder: '$(build.artifactstagingdirectory)'
+        condition: succeededOrFailed()
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact'
+        inputs:
+          PathtoPublish: '$(build.artifactstagingdirectory)'
+          ArtifactName: drop
+        condition: succeededOrFailed()
+      
+      - bash: ls $(build.artifactstagingdirectory)
+
       - task: AzureCLI@2
         displayName: Install Azure CLI Spring Extension
         inputs:
@@ -210,6 +228,14 @@ jobs:
             az extension add --name spring -y
             az spring list -o table
           addSpnToEnvironment: true 
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Download Pipeline Artifact'
+        inputs:
+          artifactName: drop
+          buildType: 'current'
+
+      - bash: ls $(Pipeline.Workspace)
+      
       - task: AzureCLI@2
         displayName: Deploy api-gateway
         inputs:
@@ -379,20 +405,3 @@ jobs:
         workingDirectory: $(workingDirectory)
 
   - job: destroy_hub_network
-    displayName: Destroy 02 Hub Network
-    dependsOn: [destroy_spoke_network]
-    condition: eq(variables['destroyStandard'], 'true')
-    steps:
-    - task: AzureCLI@2
-      displayName: "Destroy 02 Hub Network"
-      inputs:
-        azureSubscription: 'scSub002'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          resourceGroup=rg-$(namePrefix)-HUB
-          echo Deleting Resource Group: $resourceGroup
-          echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
-          az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
-          az group delete --name $resourceGroup -y
-        workingDirectory: $(workingDirectory)
