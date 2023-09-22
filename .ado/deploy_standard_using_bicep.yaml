@@ -48,6 +48,10 @@ variables:
     value: "empty.bicep"
   - name : createAgain
     value: "false"
+  - name : spring_apps_rg  
+    value :  'rg-springlza-APPS'
+  - name : spring_apps_service_name
+    value : 'spring-springlza-dev-2qn6'
 
 resources:
   repositories:
@@ -161,8 +165,6 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
-          spring_apps_rg  : 'rg-$(namePrefix)-APPS'
-          spring_apps_service_name : 'spring-springlza-dev-2qn6'
           inlineScript: |
             echo 'Creating Spring App for $(apiGateway)'
             az spring app create -n $(apiGateway) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
