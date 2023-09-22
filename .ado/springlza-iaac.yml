@@ -62,7 +62,7 @@ resources:
     ref: refs/heads/azure
 
 stages:
-  - stage: Provision_Infrastructure
+  - stage: provision_infrastructure
     jobs:
     - job: Deploy_X
       steps:
@@ -76,7 +76,7 @@ stages:
             az --version
 
   - stage: deploy_spring_app
-    dependsOn:  Provision_Infrastructure
+    dependsOn:  provision_infrastructure
     condition: succeeded()
     jobs:
     - job: deploy_app
@@ -92,7 +92,7 @@ stages:
 
   - stage: deprovision_infrastructure
     displayName: Deploy stage
-    dependsOn: deploy_app
+    dependsOn: deploy_spring_app
     condition: succeeded()
     jobs:
     - job: destory_infra
