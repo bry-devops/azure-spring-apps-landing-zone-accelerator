@@ -52,6 +52,8 @@ variables:
     value :  'rg-springlza-APPS'
   - name : spring_apps_service_name
     value : 'spring-springlza-dev-2qn6'
+  - name : destroyStandard
+    value: true
 
 resources:
   repositories:
