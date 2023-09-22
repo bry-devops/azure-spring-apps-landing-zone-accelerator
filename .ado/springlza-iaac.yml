@@ -144,9 +144,9 @@ stages:
 
   - stage: deploy_spring_app
     displayName: "Deploy Petclinic Spring App"
-    #dependsOn:  provision_infrastructure
+    dependsOn:  provision_infrastructure
     #condition: succeeded()
-    dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
+    #dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
     jobs:
     - job: deploy_pet_clinic_infra
       displayName: "Deploy Pet Clinic Spring App"
