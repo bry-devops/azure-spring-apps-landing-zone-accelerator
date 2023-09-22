@@ -30,7 +30,7 @@ variables:
   - name: deployFirewallStandard
     value: "false"
   - name: destroyStandard
-    value: "false"
+    value: "true"
   - name: region
     value: "eastus"
   - name: environment
