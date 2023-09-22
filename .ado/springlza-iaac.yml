@@ -321,7 +321,7 @@ stages:
   - stage: deprovision_infrastructure
     displayName: "Deprovision Infrastrcture"
     dependsOn: deploy_spring_app
-    condition: or(succeeded(), skipped(), failed())
+    condition: or(succeeded(),  failed())
     jobs:
     - job: destroy_pet_clinic_infra
       displayName: Destroy Pet Clinic Infrastructure
