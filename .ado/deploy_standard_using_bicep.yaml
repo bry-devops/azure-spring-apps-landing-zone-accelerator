@@ -235,8 +235,7 @@ jobs:
           buildType: 'current'
 
       - bash: ls $(Pipeline.Workspace)
-      - bash: ls $(Pipeline.Workspace)/spring-petclinic-api-gateway/target
-      - bash: ls $(Pipeline.Workspace)/drop
+      - bash: ls $(Pipeline.Workspace)/$(apiGatewayJar) 
       
       - task: AzureCLI@2
         displayName: Deploy api-gateway
