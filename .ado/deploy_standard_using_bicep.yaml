@@ -178,11 +178,6 @@ jobs:
     #dependsOn: [deploy_pet_clinic_infra, provision_standard_sa ]
     pool: 
       vmImage: 'ubuntu-latest'
-#    variables:
-#      - name: spring_apps_service_name 
-#        value: spring-springlza-dev-2qn6
-#      - name: spring_apps_rg 
-#        value: rg-$(namePrefix)-APPS
     steps:
       - checkout: pet-clinic-microservices
         path: pet-clinic
@@ -234,12 +229,8 @@ jobs:
           artifactName: drop
           buildType: 'current'
 
-      - bash: ls $(Pipeline.Workspace)
-<<<<<<< HEAD
-=======
       - bash: ls $(Pipeline.Workspace)/$(apiGatewayJar) 
->>>>>>> e5af55f1daea860560d8631f75d4b68775f1abf1
-      
+  
       - task: AzureCLI@2
         displayName: Deploy api-gateway
         inputs:
@@ -255,21 +246,21 @@ jobs:
               --jvm-options='-Xms2048m -Xmx2048m' \
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
-#      - task: AzureCLI@2
-#        displayName: Deploy admin-server
-#        inputs:
-#          azureSubscription: $(azureServiceConnection)
-#          scriptLocation: inlineScript
-#          scriptType: bash
-#          inlineScript: |
-#            az spring app deploy \
-#              --resource-group $(spring_apps_rg) \
-#              --service $(spring_apps_service_name) \
-#              --name $(adminServer) \
-#              --artifact-path $(adminServerJar) \
-#              --jvm-options='-Xms2048m -Xmx2048m' \
-#              --env SPRING_PROFILES_ACTIVE=passwordless
-#          addSpnToEnvironment: true 
+      - task: AzureCLI@2
+        displayName: Deploy admin-server
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            az spring app deploy \
+              --resource-group $(spring_apps_rg) \
+              --service $(spring_apps_service_name) \
+              --name $(adminServer) \
+              --artifact-path $(Pipeline.Workspace)/$(adminServerJar) \
+              --jvm-options='-Xms2048m -Xmx2048m' \
+              --env SPRING_PROFILES_ACTIVE=passwordless
+          addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy customers-service
         inputs:
@@ -296,7 +287,7 @@ jobs:
 #              --resource-group $(spring_apps_rg) \
 #              --service $(spring_apps_service_name) \
 #              --name $(vetsService) \
-#              --artifact-path $(vetsServiceJar) \
+#              --artifact-path $(Pipeline.Workspace)/$(vetsServiceJar) \
 #              --jvm-options='-Xms2048m -Xmx2048m' \
 #              --env SPRING_PROFILES_ACTIVE=passwordless
 #          addSpnToEnvironment: true 
@@ -311,7 +302,7 @@ jobs:
 #              --resource-group $(spring_apps_rg) \
 #              --service $(spring_apps_service_name) \
 #              --name $(visitsService) \
-#              --artifact-path $(visitsServiceJar) \
+#              --artifact-path $(Pipeline.Workspace)/$(visitsServiceJar) \
 #              --jvm-options='-Xms2048m -Xmx2048m' \
 #              --env SPRING_PROFILES_ACTIVE=passwordless
 #          addSpnToEnvironment: true 
@@ -409,3 +400,20 @@ jobs:
         workingDirectory: $(workingDirectory)
 
   - job: destroy_hub_network
+    displayName: Destroy Hub Network
+    dependsOn: [destroy_spring_apps_standard]
+    condition: eq(variables['destroyStandard'], 'true')
+    steps:
+    - task: AzureCLI@2
+      displayName: "Destroy  Hub Network"
+      inputs:
+        azureSubscription: 'scSub002'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          resourceGroup=rg-$(namePrefix)-HUB
+          echo Deleting Resource Group: $resourceGroup
+          echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+          az group delete --name $resourceGroup -y
+        workingDirectory: $(workingDirectory)
