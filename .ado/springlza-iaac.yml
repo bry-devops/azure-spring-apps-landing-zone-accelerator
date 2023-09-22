@@ -69,7 +69,7 @@ stages:
       - task: AzureCLI@2
         displayName: Preview Bicep Changes
         inputs:
-          azureSubscription: $(azureSubscription)
+          azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
@@ -84,7 +84,7 @@ stages:
       - task: AzureCLI@2
         displayName: Preview Bicep Changes
         inputs:
-          azureSubscription: $(azureSubscription)
+          azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
@@ -100,7 +100,7 @@ stages:
       - task: AzureCLI@2
         displayName: Preview Bicep Changes
         inputs:
-          azureSubscription: $(azureSubscription)
+          azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
