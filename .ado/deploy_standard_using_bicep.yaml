@@ -165,9 +165,9 @@ jobs:
           spring_apps_service_name : 'spring-springlza-dev-2qn6'
           inlineScript: |
             echo 'Creating Spring App for $(apiGateway)'
-            az spring app create -n $(apiGateway) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+            az spring app create -n $(apiGateway) -g $spring_apps_rg -s $spring_apps_service_name --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
             echo 'Creating Spring App for $(customerService)'
-            az spring app create -n $(customerService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
+            az spring app create -n $(customerService) -g $spring_apps_rg -s $spring_apps_service_name --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
           workingDirectory: $(workingDirectory)
 
  
