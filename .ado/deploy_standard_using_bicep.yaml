@@ -236,6 +236,7 @@ jobs:
 
       - bash: ls $(Pipeline.Workspace)
       - bash: ls $(Pipeline.Workspace)/spring-petclinic-api-gateway
+      - bash: ls $(Pipeline.Workspace)/drop
       
       - task: AzureCLI@2
         displayName: Deploy api-gateway
