@@ -212,7 +212,7 @@ stages:
     - job: deploy_pet_clinic_ms
       displayName: Build and Deploy Pet Clinic Microservices
       #dependsOn: [deploy_pet_clinic_infra, provision_standard_sa ]
-      #dependsOn: [deploy_pet_clinic_infra ]
+      dependsOn: [deploy_pet_clinic_infra ]
       pool: 
         vmImage: 'ubuntu-latest'
       steps:
@@ -228,6 +228,7 @@ stages:
               az spring list -o table
             addSpnToEnvironment: true 
         - task: DownloadPipelineArtifact@2
+          displayName: "download build-release artifacts"
           inputs:
             buildType: 'specific'
             project: '890a29bf-c2f0-456a-b797-d55b19415604'
@@ -358,7 +359,7 @@ stages:
           workingDirectory: $(workingDirectory)
     - job: destroy_hub_firewall
       displayName: Destroy 05 Hub Firewall
-      #dependsOn: [destroy_spring_apps_standard]
+      dependsOn: [destroy_spring_apps_standard]
       condition: eq(variables['destroyStandard'], 'true')
       steps:
       - task: AzureCLI@2
