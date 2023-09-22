@@ -161,6 +161,7 @@ jobs:
 
       - task: AzureCLI@2
         displayName: "Deploy spring app $(apiGateway)"
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
@@ -174,6 +175,7 @@ jobs:
 
       - task: AzureCLI@2
         displayName: "Deploy Spring App $(customerService)"
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
@@ -185,6 +187,7 @@ jobs:
 
       - task: AzureCLI@2
         displayName: "Deploy Spring App $(adminServer)"
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
@@ -195,6 +198,7 @@ jobs:
           workingDirectory: $(workingDirectory) 
       - task: AzureCLI@2
         displayName: "Deploy Spring App $(vetsService)"
+        condition: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
@@ -206,6 +210,7 @@ jobs:
 
       - task: AzureCLI@2
         displayName: "Deploy Spring App $(visitsService)"
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
