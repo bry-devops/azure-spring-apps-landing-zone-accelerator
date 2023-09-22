@@ -235,6 +235,7 @@ jobs:
           buildType: 'current'
 
       - bash: ls $(Pipeline.Workspace)
+      - bash: ls $(Pipeline.Workspace)/spring-petclinic-api-gateway
       
       - task: AzureCLI@2
         displayName: Deploy api-gateway
@@ -247,7 +248,7 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name $(apiGateway) \
-              --artifact-path $(apiGatewayJar) \
+              --artifact-path $(Pipeline.Workspace)/$(apiGatewayJar) \
               --jvm-options='-Xms2048m -Xmx2048m' \
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
