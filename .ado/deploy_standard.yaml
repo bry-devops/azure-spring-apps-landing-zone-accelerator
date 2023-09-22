@@ -27,7 +27,7 @@ variables:
   - name: deployFirewallStandard
     value: "false"
   - name: destroyStandard
-    value: "false"
+    value: "false"  
   - name: region
     value: "eastus"
   - name: namePrefix
