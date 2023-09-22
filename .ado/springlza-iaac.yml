@@ -339,7 +339,8 @@ stages:
           workingDirectory: $(workingDirectory)
     - job: destroy_spring_apps_standard
       displayName: Destroy 06 LZ Spring Apps Standard
-      dependsOn: [destroy_pet_clinic_infra,  provision_standard_sa]
+      dependsOn: [destroy_pet_clinic_infra]
+      #dependsOn: [destroy_pet_clinic_infra,  provision_standard_sa]
       condition: eq(variables['destroyStandard'], 'true')
       steps:
       - task: AzureCLI@2
@@ -357,7 +358,7 @@ stages:
           workingDirectory: $(workingDirectory)
     - job: destroy_hub_firewall
       displayName: Destroy 05 Hub Firewall
-      dependsOn: [destroy_spring_apps_standard]
+      #dependsOn: [destroy_spring_apps_standard]
       condition: eq(variables['destroyStandard'], 'true')
       steps:
       - task: AzureCLI@2
