@@ -255,6 +255,7 @@ jobs:
   
       - task: AzureCLI@2
         displayName: Deploy api-gateway
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
@@ -270,6 +271,7 @@ jobs:
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName: Deploy admin-server
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
@@ -285,6 +287,7 @@ jobs:
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy customers-service
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
@@ -300,6 +303,7 @@ jobs:
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy vets-service
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
@@ -315,6 +319,7 @@ jobs:
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy visits-service
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
