@@ -28,8 +28,6 @@ param appInsightsName string = '${namePrefix}-ai'
 @description('Name of the log analytics workspace instance. Specify this value in the parameters.json file to override this default.')
 param logAnalyticsWorkspaceName string = 'law-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
 
-@description('Name of the spring apps instance. Specify this value in the parameters.json file to override this default.')
-param springAppsName string = length('${namePrefix}-${environment}') > 20 ? 'spring-${toLower(substring('${namePrefix}-${environment}', 0, 20))}-${substring(uniqueString(namePrefix), 0, 4)}' : 'spring-${toLower('${namePrefix}-${environment}')}-${substring(uniqueString(namePrefix), 0, 4)}'
 
 //VNET Names - Override these in the parameters.json file to match your organization's naming conventions
 @description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
@@ -69,6 +67,12 @@ param sharedRgName string = 'rg-${namePrefix}-SHARED'
 
 @description('Name of the resource group that contains the Spring Apps instance. Specify this value in the parameters.json file to override this default.')
 param appRgName string = 'rg-${namePrefix}-APPS'
+
+@description('Name of the spring apps instance. Specify this value in the parameters.json file to override this default.')
+/**
+#param springAppsName string = length('${namePrefix}-${environment}') > 20 ? 'spring-${toLower(substring('${namePrefix}-${environment}', 0, 20))}-${substring(uniqueString(namePrefix), 0, 4)}' : 'spring-${toLower('${namePrefix}-${environment}')}-${substring(uniqueString(namePrefix), 0, 4)}'
+*/
+param springAppsName string = 'rg-${namePrefix}-APPS-Instance'
 
 @description('Name of the resource group that Spring Apps creates for its runtime. Specify this value in the parameters.json file to override this default.')
 param serviceRuntimeNetworkResourceGroup string = '${springAppsName}-runtime-rg'
