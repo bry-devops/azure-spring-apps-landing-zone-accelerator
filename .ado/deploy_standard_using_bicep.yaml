@@ -151,7 +151,7 @@ jobs:
 
   - job: deploy_pet_clinic_infra
     displayName: "Deploy Pet Clinic Infrastructure"
-    dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
+    #dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
     steps:
       - checkout: self
 
