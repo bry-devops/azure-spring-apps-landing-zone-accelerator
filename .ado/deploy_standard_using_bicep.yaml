@@ -198,7 +198,7 @@ jobs:
           workingDirectory: $(workingDirectory) 
       - task: AzureCLI@2
         displayName: "Deploy Spring App $(vetsService)"
-        condition: true
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
@@ -207,17 +207,7 @@ jobs:
             echo 'Creating Spring App for $(vetsService)'
             az spring app create -n $(vetsService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
           workingDirectory: $(workingDirectory) 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: '$(azureServiceConnection)'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      echo 'Creating Spring App for $(apiGateway)'
-      az spring app create -n $(apiGateway) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
-      #echo 'Creating Spring App for $(customerService)'
-      #az spring app create -n $(customerService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
-    workingDirectory: '$(workingDirectory)'
+
       - task: AzureCLI@2
         displayName: "Deploy Spring App $(visitsService)"
         continueOnError: true
