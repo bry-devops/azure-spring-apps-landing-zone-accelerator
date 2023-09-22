@@ -1,19 +1,109 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# ADO Pipeline
+name: Azure Springs Apps LZA Deployment
 
-trigger:
-- main
+trigger: none
 
-pool:
-  vmImage: ubuntu-latest
+pool: 
+  vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  - name: adminServer
+    value: admin-server
+  - name: apiGateway
+    value: api-gateway
+  - name: customerService
+    value: customers-service
+  - name: vetsService
+    value: vets-service
+  - name: visitsService
+    value: visits-service
+  - name: apiGatewayJar
+    value: "spring-petclinic-api-gateway/target/api-gateway-3.0.1.jar"
+  - name: adminServerJar
+    value: "spring-petclinic-admin-server/target/admin-server-3.0.1.jar"
+  - name: customersServiceJar
+    value: "spring-petclinic-customers-service/target/customers-service-3.0.1.jar"
+  - name: vetsServiceJar
+    value: "spring-petclinic-vets-service/target/vets-service-3.0.1.jar" 
+  - name: visitsServiceJar
+    value: "spring-petclinic-visits-service/target/visits-service-3.0.1.jar" 
+  - name: deployFirewallStandard
+    value: "false"
+  - name: destroyStandard
+    value: "true"
+  - name: region
+    value: "eastus"
+  - name: environment
+    value: "dev"
+  - name: jumpBoxUsername
+    value: "ltzadmin"
+  - name: mySQLAdminUsername
+    value: "mySqlAdmin"
+  - name : azureServiceConnection
+    value : 'scSub002'
+  - group : lza-dev
+  - name : workingDirectory
+    value : "Scenarios/ASA-Secure-Baseline/Bicep"
+  - name : deleteTemplateFile
+    value: "empty.bicep"
+  - name : createAgain
+    value: "false"
+  - name : spring_apps_rg  
+    value :  'rg-springlza-APPS'
+  - name : spring_apps_service_name
+    value : 'spring-springlza-dev-2qn6'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+resources:
+  repositories:
+  - repository: pet-clinic-microservices
+    type: github
+    endpoint: bry-devops
+    name: bry-devops/spring-petclinic-microservices
+    ref: refs/heads/azure
+
+stages:
+  - stage: Provision_Infrastructure
+    jobs:
+    - job: Deploy_X
+      steps:
+      - task: AzureCLI@2
+        displayName: Preview Bicep Changes
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az --version
+
+  - stage: deploy_spring_app
+    dependsOn:  Provision_Infrastructure
+    condition: succeeded()
+    jobs:
+    - job: deploy_app
+      steps:
+      - task: AzureCLI@2
+        displayName: Preview Bicep Changes
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az --version
+
+  - stage: deprovision_infrastructure
+    displayName: Deploy stage
+    dependsOn: deploy_app
+    condition: succeeded()
+    jobs:
+    - job: destory_infra
+      steps:
+      - task: AzureCLI@2
+        displayName: Preview Bicep Changes
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az --version
+
+
