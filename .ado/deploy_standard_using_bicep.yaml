@@ -55,7 +55,7 @@ resources:
     type: github
     endpoint: bry-devops
     name: bry-devops/spring-petclinic-microservices
-    ref: main
+    ref: refs/heads/azure
 
 jobs:
   - job: provision_hub_network
