@@ -63,6 +63,7 @@ resources:
 
 stages:
   - stage: provision_infrastructure
+    displayName: "Provision Infrastructure"
     jobs:
     - job: Deploy_X
       steps:
@@ -76,6 +77,7 @@ stages:
             az --version
 
   - stage: deploy_spring_app
+    displayName: "Deploy Petclinic Spring App"
     dependsOn:  provision_infrastructure
     condition: succeeded()
     jobs:
@@ -91,7 +93,7 @@ stages:
             az --version
 
   - stage: deprovision_infrastructure
-    displayName: Deploy stage
+    displayName: "Deprovision Infrastrcture"
     dependsOn: deploy_spring_app
     condition: succeeded()
     jobs:
