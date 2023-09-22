@@ -325,7 +325,7 @@ stages:
     jobs:
     - job: destroy_pet_clinic_infra
       displayName: Destroy Pet Clinic Infrastructure
-      dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
+      #dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
       condition: eq(variables['destroyStandard'], 'true')
       steps:
       - task: AzureCLI@2
