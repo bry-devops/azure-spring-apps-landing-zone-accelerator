@@ -210,7 +210,7 @@ stages:
               az spring app create -n $(visitsService) -g $(spring_apps_rg) -s $(spring_apps_service_name) --runtime-version Java_17 --instance-count 1 --memory 2Gi --system-assigned true --assign-public-endpoint
             workingDirectory: $(workingDirectory) 
     - job: deploy_pet_clinic_ms
-      displayName: Build and Deploy Pet Clinic Microservices
+      displayName: Deploy Pet Clinic Microservices
       #dependsOn: [deploy_pet_clinic_infra, provision_standard_sa ]
       dependsOn: [deploy_pet_clinic_infra ]
       pool: 
@@ -250,7 +250,7 @@ stages:
                 --service $(spring_apps_service_name) \
                 --name $(apiGateway) \
                 --artifact-path $(Pipeline.Workspace)/$(apiGatewayJar) \
-                --jvm-options='-Xms2048m -Xmx2048m' \
+                --jvm-options='-Xms1024m -Xmx2048m' \
                 --env SPRING_PROFILES_ACTIVE=passwordless
             addSpnToEnvironment: true 
         - task: AzureCLI@2
@@ -266,7 +266,7 @@ stages:
                 --service $(spring_apps_service_name) \
                 --name $(adminServer) \
                 --artifact-path $(Pipeline.Workspace)/$(adminServerJar) \
-                --jvm-options='-Xms2048m -Xmx2048m' \
+                --jvm-options='-Xms1024m -Xmx2048m' \
                 --env SPRING_PROFILES_ACTIVE=passwordless
             addSpnToEnvironment: true 
         - task: AzureCLI@2
@@ -282,7 +282,7 @@ stages:
                 --service $(spring_apps_service_name) \
                 --name $(customerService) \
                 --artifact-path $(Pipeline.Workspace)/$(customersServiceJar) \
-                --jvm-options='-Xms2048m -Xmx2048m' \
+                --jvm-options='-Xms1024m -Xmx2048m' \
                 --env SPRING_PROFILES_ACTIVE=passwordless
             addSpnToEnvironment: true 
         - task: AzureCLI@2
@@ -298,7 +298,7 @@ stages:
                 --service $(spring_apps_service_name) \
                 --name $(vetsService) \
                 --artifact-path $(Pipeline.Workspace)/$(vetsServiceJar) \
-                --jvm-options='-Xms2048m -Xmx2048m' \
+                --jvm-options='-Xms1024m -Xmx2048m' \
                 --env SPRING_PROFILES_ACTIVE=passwordless
             addSpnToEnvironment: true 
         - task: AzureCLI@2
@@ -314,7 +314,7 @@ stages:
                 --service $(spring_apps_service_name) \
                 --name $(visitsService) \
                 --artifact-path $(Pipeline.Workspace)/$(visitsServiceJar) \
-                --jvm-options='-Xms2048m -Xmx2048m' \
+                --jvm-options='-Xms1024m -Xmx2048m' \
                 --env SPRING_PROFILES_ACTIVE=passwordless
             addSpnToEnvironment: true 
 
