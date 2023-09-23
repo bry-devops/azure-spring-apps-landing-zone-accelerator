@@ -381,7 +381,7 @@ stages:
       condition: eq(variables['destroyStandard'], 'true')
       steps:
       - task: AzureCLI@2
-        displayName: "Destroy 04 LZ Shared Resources"
+        displayName: "Destroy 04 Spoke Shared Resources"
         inputs:
           azureSubscription: 'scSub002'
           scriptType: 'bash'
@@ -394,12 +394,12 @@ stages:
             az group delete --name $resourceGroup -y
           workingDirectory: $(workingDirectory)    
     - job: destroy_spoke_network
-      displayName: Destroy 03 LZ Network
+      displayName: Destroy 03 Spoke Network
       dependsOn: [destroy_shared_resources]
       condition: eq(variables['destroyStandard'], 'true')
       steps:
       - task: AzureCLI@2
-        displayName: "Destroy 03 LZ Network"
+        displayName: "Destroy 03 Spoke Network"
         inputs:
           azureSubscription: 'scSub002'
           scriptType: 'bash'
@@ -413,7 +413,7 @@ stages:
           workingDirectory: $(workingDirectory)
     - job: destroy_hub_network
       displayName: Destroy Hub Network
-      dependsOn: [destroy_spring_apps_standard]
+      dependsOn: [destroy_spring_apps_standard, destroy_spoke_network]
       condition: eq(variables['destroyStandard'], 'true')
       steps:
       - task: AzureCLI@2
