@@ -173,8 +173,8 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
-          resourceGroupName: 'rg-${{variables.namePrefix}}-APPS'
-          springAppServiceName: 'rg-${{variables.namePrefix}}-apps-instance'
+          resourceGroupName: "rg-${{variables.namePrefix}}-APPS"
+          springAppServiceName: "rg-${{variables.namePrefix}}-apps-instance"
           instanceCount: 1
           runtime: "java_17"
           cpu: 1
