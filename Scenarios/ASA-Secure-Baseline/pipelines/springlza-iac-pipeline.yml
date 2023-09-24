@@ -183,7 +183,7 @@ stages:
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
           jobName: "deploy_apigateway"
-          dependson: [create_apigateway, deploy_pre_setup]
+          dependson: [create_apigateway]
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
@@ -198,7 +198,7 @@ stages:
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
           jobName: "deploy_customers_service"
-          dependson: [create_customers_service, deploy_pre_setup]
+          dependson: [create_customers_service]
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
