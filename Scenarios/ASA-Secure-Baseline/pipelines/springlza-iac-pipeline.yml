@@ -47,11 +47,11 @@ variables:
   - name: deleteTemplateFile
     value: "empty.bicep"
   - name: ephemeral
-    value: true
+    value: false
   - name: spring_apps_rg
-    value: "rg-springlza-APPS"
+    value: 'rg-${namePrefix}-APPS'
   - name: spring_apps_service_name
-    value: "spring-springlza-dev-2qn6"
+    value: 'rg-${namePrefix}-apps-instance'
   - name: destroyStandard
     value: true
 
@@ -232,7 +232,7 @@ stages:
   - stage: deprovision_infrastructure
     displayName: "Deprovision Infrastrcture"
     dependsOn: deploy_spring_app
-    condition: or(succeeded(),  failed())
+    condition: and(succeeded(), eq('${{ parameters.ephemeral }}', true) )
     jobs:
       - template: templates/jobs/job-echo-infra.yml
         parameters:
