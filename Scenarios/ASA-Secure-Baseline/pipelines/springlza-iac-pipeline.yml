@@ -74,7 +74,7 @@ stages:
           serviceConnection : $(azureServiceConnection)
           deploymentName : $(deploymentName)
           location : $(location)
-          templateFile : "02-Hub-Network-main.bicep"
+          templateFile : "02-Hub-Network/02-Hub-Network-main.bicep"
           paramFile : "main.parameters.json"
           namePrefix : $(namePrefix)
           servicePrincipalId : $(servicePrincipalId)
