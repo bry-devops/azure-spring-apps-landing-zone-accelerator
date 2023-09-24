@@ -46,7 +46,7 @@ variables:
     value : "Scenarios/ASA-Secure-Baseline/Bicep"
   - name : deleteTemplateFile
     value: "empty.bicep"
-  - name : createAgain
+  - name : ephemeral
     value: "true"
   - name : spring_apps_rg  
     value :  'rg-springlza-APPS'
