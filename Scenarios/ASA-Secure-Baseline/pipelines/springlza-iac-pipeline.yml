@@ -47,7 +47,7 @@ variables:
   - name : deleteTemplateFile
     value: "empty.bicep"
   - name : ephemeral
-    value: true
+    value: "true"
   - name : spring_apps_rg  
     value :  'rg-springlza-APPS'
   - name : spring_apps_service_name
