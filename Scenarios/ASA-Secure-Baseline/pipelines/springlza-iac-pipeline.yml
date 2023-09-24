@@ -198,7 +198,7 @@ stages:
           templateFile : "empty.bicep"
           workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
 
-      - template : templates/jobs/job-destroy-infra.yaml
+      - template : templates/jobs/job-destroy-infra.yml
         parameters:
           jobName : 'destroy_spoke_network'
           dependson : [destroy_shared_resources]
