@@ -71,8 +71,8 @@ stages:
         parameters:
           jobName : provision_hub_network
           ephemeral : $(ephemeral)
-          servceConnection : $(azureServiceConnection)
-          deploymentNmame : $(deploymentName)
+          serviceConnection : $(azureServiceConnection)
+          deploymentName : $(deploymentName)
           location : $(location)
           templateFile : "02-Hub-Network-main.bicep"
           paramFile : "main.parameters.json"
