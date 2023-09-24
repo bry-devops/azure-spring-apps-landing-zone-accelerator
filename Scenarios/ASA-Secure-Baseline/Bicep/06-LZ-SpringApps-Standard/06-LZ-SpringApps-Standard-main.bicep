@@ -185,7 +185,7 @@ param springAppsRuntimeCidr string
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
-module firewall '05-Hub-AzureFirewall/main.bicep' = {
+module firewall '../05-Hub-AzureFirewall/main.bicep' = {
   name: '${timeStamp}-firewall'
   params: {
     azureFirewallName: azureFirewallName
