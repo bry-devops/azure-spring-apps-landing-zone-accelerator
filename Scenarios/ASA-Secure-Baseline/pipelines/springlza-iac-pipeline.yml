@@ -49,9 +49,9 @@ variables:
   - name: ephemeral
     value: false
   - name: spring_apps_rg
-    value: 'rg-${namePrefix}-APPS'
+    value: 'rg-${{variables.namePrefix}}-APPS'
   - name: spring_apps_service_name
-    value: 'rg-${namePrefix}-apps-instance'
+    value: 'rg-${{variables.namePrefix}}-apps-instance'
   - name: destroyStandard
     value: true
 
@@ -180,7 +180,7 @@ stages:
           memory: 2
           workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"
       - job: deploy_pet_clinic_microservices
-        displayName: Deploy Pet Clinic Microservices
+        displayName: 'Job: Deploy Pet Clinic Microservices'
         dependsOn: [create_apigateway, create_customers_service]
         pool:
           vmImage: "ubuntu-latest"
@@ -209,7 +209,7 @@ stages:
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
           jobName: "deploy_apigateway"
-          dependson: []
+          dependson: [create_apigateway, deploy_pet_clinic_microservices]
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
@@ -219,7 +219,7 @@ stages:
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
           jobName: "deploy_customers_service"
-          dependson: []
+          dependson: [create_customers_service, deploy_pet_clinic_microservices]
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"

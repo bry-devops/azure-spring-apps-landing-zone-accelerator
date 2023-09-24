@@ -17,7 +17,7 @@ parameters:
     type: string
 jobs:
   - job: ${{parameters.jobName}}
-    displayName: "Step: Deploy App - ${{parameters.jobName}}"
+    displayName: "Job: Deploy App - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
     continueOnError: true
     steps:
