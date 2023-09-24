@@ -35,7 +35,6 @@ jobs:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          echo 'This job is not implemented'
-          echo 'Creating Spring App -- ${{parameters.appName}}'
+          echo 'Creating Spring App -- ${{parameters.appName}} in rg  ${{parameters.resourceGroupName}}'
           az spring app create -n ${{parameters.appName}} -g ${{parameters.resourceGroupName}} -s ${{parameters.springAppServiceName}} --runtime-version ${{parameters.runtime}} --instance-count ${{parameters.instanceCount}} --cpu ${{parameters.cpu}} --memory ${{parameters.memory}} --system-assigned true --assign-public-endpoint
         workingDirectory: ${{parameters.workingDirectory}}

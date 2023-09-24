@@ -27,6 +27,7 @@ jobs:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
+          echo 'Deploying Spring App -- ${{parameters.appName}}''
           az spring app deploy \
             --resource-group ${{parameters.resourceGroupName}} \
             --service ${{parameters.springAppServiceName}} \
