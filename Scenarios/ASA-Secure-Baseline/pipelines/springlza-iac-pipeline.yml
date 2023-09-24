@@ -159,7 +159,7 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
-          resourceGroupName: ${{variables.rgName}}
+          resourceGroupName: "rg-$(namePrefix)-APPS"
           springAppServiceName: "rg-$(namePrefix)-apps-instance"
           instanceCount: 1
           runtime: "java_17"
@@ -173,12 +173,12 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
-          resourceGroupName: rg-${{variables.namePrefix}}-APPS
-          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
+          resourceGroupName: "rg-$(namePrefix)-APPS"
+          springAppServiceName: "rg-$(namePrefix)-apps-instance"
           instanceCount: 1
           runtime: "java_17"
           cpu: 1
-          memory: 2
+          memory: 2Gi
           workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"
       - job: deploy_pre_setup
         displayName: 'Job: Pre Setup to Deploy Pet Clinic Microservices'
@@ -214,8 +214,8 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
-          resourceGroupName: rg-${{variables.namePrefix}}-APPS
-          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
+          resourceGroupName:  "rg-$(namePrefix)-APPS"
+          springAppServiceName: "rg-$(namePrefix)-apps-instance"
           artifactPath: $(Pipeline.Workspace)/$(apiGatewayJar)
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
@@ -224,8 +224,8 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
-          resourceGroupName: rg-${{variables.namePrefix}}-APPS
-          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
+          resourceGroupName: "rg-$(namePrefix)-APPS"
+          springAppServiceName: "rg-$(namePrefix)-apps-instance"
           artifactPath: $(Pipeline.Workspace)/$(customersServiceJar)
 
 
