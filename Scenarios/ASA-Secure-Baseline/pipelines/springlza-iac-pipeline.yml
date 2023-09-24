@@ -148,6 +148,8 @@ stages:
     displayName: "Deploy Petclinic Spring App"
     dependsOn: provision_infrastructure
     condition: not(or(failed(), canceled()))
+    variables:
+      - rgName : 'rg-${{variables.namePrefix}}-APPS'
     jobs:
       - template: templates/jobs/job-spring-app-create.yml
         parameters:
@@ -156,12 +158,12 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
-          resourceGroupName: rg-${{variables.namePrefix}}-APPS
-          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
+          resourceGroupName: 'rg-${{variables.namePrefix}}-APPS'
+          springAppServiceName: 'rg-${{variables.namePrefix}}-apps-instance'
           instanceCount: 1
           runtime: "java_17"
           cpu: 1
-          memory: 2
+          memory: 2Gi
           workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"
       - template: templates/jobs/job-spring-app-create.yml
         parameters:
