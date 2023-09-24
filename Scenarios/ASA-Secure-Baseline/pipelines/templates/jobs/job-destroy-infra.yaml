@@ -9,7 +9,7 @@ parameters:
     type : string 
   - name : resourceGroupName
     type : string
-  - name : templateFle 
+  - name : templateFile 
     type : string
   - name : workingDirectory
     type : string 
