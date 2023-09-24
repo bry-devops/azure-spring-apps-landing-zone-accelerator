@@ -17,7 +17,7 @@ jobs:
   - job: ${{parameters.jobName}}
     displayName: "Job: Destroy Infrastructure - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
-    condition: eq(parameters['ephemeral'], 'true')
+    condition: eq('${{ parameters.ephemeral }}', true)
     steps:
     - task: AzureCLI@2
       inputs:

@@ -27,7 +27,7 @@ jobs:
   - job: "${{parameters.jobName}}"
     displayName: "Job: Provision Infrastructure - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
-    condition: eq(variables['ephemeral'], 'true')
+    condition: eq('${{ parameters.ephemeral }}', true)
     steps:
       - checkout: self
       - task: AzureCLI@2
