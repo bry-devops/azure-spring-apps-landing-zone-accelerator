@@ -26,7 +26,7 @@ parameters:
 jobs:
   - job: "${{parameters.jobName}}"
     displayName: "Job: Provision Infrastructure - ${{parameters.jobName}}"
-    dpendsOn: ${{parameters.dependson}}
+    dependsOn: ${{parameters.dependson}}
     condition: eq(variables['ephemeral'], 'true')
     steps:
       - checkout: self

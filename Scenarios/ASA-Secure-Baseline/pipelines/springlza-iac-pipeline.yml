@@ -85,6 +85,7 @@ stages:
       - template : "templates/jobs/job-provision-infra.yml"
         parameters:
           jobName : provision_spoke_network
+          dependson: [provision_hub_network]
           ephemeral : true
           serviceConnection : $(azureServiceConnection)
           deploymentName : $(deploymentName)
