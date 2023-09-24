@@ -178,7 +178,6 @@ stages:
           runtime: "java_17"
           cpu: 1
           memory: 2
-          templateFile: ""
           workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"
       - job: deploy_pet_clinic_microservices
         displayName: Deploy Pet Clinic Microservices
