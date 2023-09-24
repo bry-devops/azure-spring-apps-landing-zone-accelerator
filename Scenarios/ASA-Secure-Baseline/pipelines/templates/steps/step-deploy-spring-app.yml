@@ -1,7 +1,7 @@
 parameters:
   - name : jobName
     type : string 
-  - name : dependsOn
+  - name : dependsOn 
     type : object
   - name : ignoreError
     type : boolean 
