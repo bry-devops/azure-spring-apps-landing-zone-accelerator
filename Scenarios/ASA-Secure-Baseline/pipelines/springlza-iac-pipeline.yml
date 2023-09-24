@@ -98,12 +98,12 @@ stages:
     dependsOn: deploy_spring_app
     condition: or(succeeded(),  failed())
     jobs:
-    - template : templates/jobs/job-destroy-infra.yaml
-      parameters:
-        jobName : 'destroy_hub_network'
-        dependson : []
-        ephemeral : $(ephemeral)
-        servceConnection : $(azureServiceConnection)
-        resourceGroupName : rg-$(namePrefix)-hub
-        templateFile : "02-Hub-Network-main.bicep"
-        workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+      - template : templates/jobs/job-destroy-infra.yaml
+        parameters:
+          jobName : 'destroy_hub_network'
+          dependson : []
+          ephemeral : $(ephemeral)
+          servceConnection : $(azureServiceConnection)
+          resourceGroupName : rg-$(namePrefix)-hub
+          templateFile : "02-Hub-Network-main.bicep"
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
