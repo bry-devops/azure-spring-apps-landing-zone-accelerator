@@ -187,7 +187,7 @@ param springAppsRuntimeCidr string
 /*     RESOURCES & MODULES    */
 /******************************/
 
-module hub '02-Hub-Network/main.bicep' = if (deployHub) {
+module hub 'main.bicep' = if (deployHub) {
   name: '${timeStamp}-hub-vnet'
   params: {
     azureBastionSubnetPrefix: bastionSubnetPrefix
