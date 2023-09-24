@@ -67,7 +67,7 @@ stages:
   - stage: provision_infrastructure
     displayName: "Provision Infrastructure"
     jobs:
-      - template : "templates/jobs/job-provision-infra.yaml"
+      - template : "templates/jobs/job-provision-infra.yml"
         parameters:
             job : provision_hub_network
             ephemeral : $(ephemeral)
