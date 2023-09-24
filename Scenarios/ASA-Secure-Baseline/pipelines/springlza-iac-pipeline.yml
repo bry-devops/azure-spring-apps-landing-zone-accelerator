@@ -208,7 +208,7 @@ stages:
               
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
-          jobName: "create_apigateway"
+          jobName: "deploy_apigateway"
           dependson: []
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
@@ -222,7 +222,7 @@ stages:
           dependson: []
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
-          appName: "api-gateway"
+          appName: "customers-service"
           resourceGroupName: $(spring_apps_rg)
           springAppServiceName: $(spring_apps_service_name)
           artifactPath: $(Pipeline.Workspace)/$(customersServiceJar)
