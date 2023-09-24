@@ -47,7 +47,7 @@ variables:
   - name: deleteTemplateFile
     value: "empty.bicep"
   - name: ephemeral
-    value: false
+    value: true
   - name : skipProvision
     value: true
 
