@@ -67,19 +67,19 @@ stages:
   - stage: provision_infrastructure
     displayName: "Provision Infrastructure"
     jobs:
-      - template : "templates/jobs/job-provision-infra.yml"
-        parameters:
-          jobName : provision_hub_network
-          ephemeral : $(ephemeral)
-          servceConnection : $(azureServiceConnection)
-          deploymentNmame : $(deploymentName)
-          location : $(location)
-          templateFile : "02-Hub-Network-main.bicep"
-          paramFile : "main.parameters.json"
-          namePrefix : $(namePrefix)
-          servicePrincipalId : $(servicePrincipalId)
-          jumpHostPassword : $(jumpHostPassword)
-          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+    - template : "templates/jobs/job-provision-infra.yml"
+      parameters:
+        jobName : provision_hub_network
+        ephemeral : $(ephemeral)
+        servceConnection : $(azureServiceConnection)
+        deploymentNmame : $(deploymentName)
+        location : $(location)
+        templateFile : "02-Hub-Network-main.bicep"
+        paramFile : "main.parameters.json"
+        namePrefix : $(namePrefix)
+        servicePrincipalId : $(servicePrincipalId)
+        jumpHostPassword : $(jumpHostPassword)
+        workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
 
 
   - stage: deploy_spring_app
@@ -98,21 +98,12 @@ stages:
     dependsOn: deploy_spring_app
     condition: or(succeeded(),  failed())
     jobs:
-    - job: destroy_hub_network
-      displayName: Destroy Hub Network
-      dependsOn: [destroy_spring_apps_standard, destroy_spoke_network]
-      condition: eq(variables['destroyStandard'], 'true')
-      steps:
-      - task: AzureCLI@2
-        displayName: "Destroy  Hub Network"
-        inputs:
-          azureSubscription: 'scSub002'
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            resourceGroup=rg-$(namePrefix)-HUB
-            echo Deleting Resource Group: $resourceGroup
-            echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
-            az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
-            az group delete --name $resourceGroup -y
-          workingDirectory: $(workingDirectory)
+    - template : templates/jobs/job-destroy-infra.yaml
+      parameters:
+        jobName : 'destroy_hub_network'
+        dependson : []
+        ephemeral : $(ephemeral)
+        servceConnection : $(azureServiceConnection)
+        resourceGroupName : rg-$(namePrefix)-hub
+        templateFile : "02-Hub-Network-main.bicep"
+        workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
