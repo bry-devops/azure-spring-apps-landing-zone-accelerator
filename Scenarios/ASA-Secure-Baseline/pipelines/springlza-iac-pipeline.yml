@@ -104,6 +104,6 @@ stages:
           dependson : []
           ephemeral : $(ephemeral)
           serviceConnection : $(azureServiceConnection)
-          resourceGroupName : rg-$(namePrefix)-hub
+          resourceGroupName : "rg-$(namePrefix)-hub"
           templateFile : "02-Hub-Network-main.bicep"
           workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
