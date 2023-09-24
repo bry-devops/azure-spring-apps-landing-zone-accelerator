@@ -127,7 +127,7 @@ stages:
       - template : templates/jobs/job-destroy-infra.yaml
         parameters:
           jobName : 'destroy_hub_network'
-          dependson : [deploy_spring_app]
+          dependson : [destroy_spoke_network]
           ephemeral : true
           serviceConnection : $(azureServiceConnection)
           resourceGroupName : "rg-$(namePrefix)-hub"
