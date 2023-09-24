@@ -35,4 +35,4 @@ jobs:
           scriptLocation: "inlineScript"
           inlineScript: |
             az deployment sub create --name ${{parameters.deploymentName}} --location ${{parameters.location}} --template-file ${{parameters.templateFile}} --parameters ${{parameters.paramFile}} location=${{parameters.location}} namePrefix=${{parameters.namePrefix}} principalId=${{parameters.servicePrincipalId}} jumpHostPassword=${{parameters.jumpHostPassword}}
-          workingDirectory: ${{workingDirectory}}
+          workingDirectory: ${{parameters.workingDirectory}}
