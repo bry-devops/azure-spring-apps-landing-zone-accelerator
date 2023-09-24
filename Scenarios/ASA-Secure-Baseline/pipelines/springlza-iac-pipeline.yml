@@ -52,8 +52,7 @@ variables:
     value: 'rg-${{variables.namePrefix}}-APPS'
   - name: spring_apps_service_name
     value: 'rg-${{variables.namePrefix}}-apps-instance'
-  - name: destroyStandard
-    value: true
+
 
 resources:
   repositories:
@@ -71,7 +70,7 @@ stages:
         parameters:
           jobName: provision_hub_network
           dependson: []
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -86,7 +85,7 @@ stages:
         parameters:
           jobName: provision_spoke_network
           dependson: [provision_hub_network]
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -101,7 +100,7 @@ stages:
         parameters:
           jobName: provision_sharedresources
           dependson: [provision_spoke_network]
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -116,7 +115,7 @@ stages:
         parameters:
           jobName: provision_hub_firewall
           dependson: [provision_hub_network, provision_sharedresources]
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -136,7 +135,7 @@ stages:
               provision_sharedresources,
               provision_hub_firewall,
             ]
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -238,7 +237,7 @@ stages:
         parameters:
           jobName: "destroy_pet_clinic_infra"
           dependson: []
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           resourceGroupName: ""
           templateFile: ""
@@ -248,7 +247,7 @@ stages:
         parameters:
           jobName: "destroy_spring_apps_standard"
           dependson: [destroy_pet_clinic_infra]
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           resourceGroupName: "rg-$(namePrefix)-APPS"
           templateFile: "empty.bicep"
@@ -258,7 +257,7 @@ stages:
         parameters:
           jobName: "destroy_hub_firewall"
           dependson: [destroy_spring_apps_standard]
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           resourceGroupName: "rg-$(namePrefix)-HUB"
           templateFile: "empty.bicep"
@@ -268,7 +267,7 @@ stages:
         parameters:
           jobName: "destroy_shared_resources"
           dependson: []
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           resourceGroupName: "rg-$(namePrefix)-SHARED"
           templateFile: "empty.bicep"
@@ -278,7 +277,7 @@ stages:
         parameters:
           jobName: "destroy_spoke_network"
           dependson: [destroy_shared_resources]
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           resourceGroupName: "rg-$(namePrefix)-SPOKE"
           templateFile: "empty.bicep"
@@ -288,7 +287,7 @@ stages:
         parameters:
           jobName: "destroy_hub_network"
           dependson: [destroy_spoke_network]
-          ephemeral: true
+          ephemeral: ${{variables.ephemeral}}
           serviceConnection: $(azureServiceConnection)
           resourceGroupName: "rg-$(namePrefix)-HUB"
           templateFile: "empty.bicep"
