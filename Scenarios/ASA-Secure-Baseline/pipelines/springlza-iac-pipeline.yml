@@ -149,7 +149,8 @@ stages:
     dependsOn: provision_infrastructure
     condition: not(or(failed(), canceled()))
     variables:
-      - rgName : 'rg-${{variables.namePrefix}}-APPS'
+      - name: rgName 
+        value:  'rg-${{variables.namePrefix}}-APPS'
     jobs:
       - template: templates/jobs/job-spring-app-create.yml
         parameters:
