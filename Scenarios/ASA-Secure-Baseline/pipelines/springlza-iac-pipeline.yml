@@ -1,0 +1,118 @@
+# ADO Pipeline
+name: Azure Springs Apps LZA Deployment
+
+trigger: none
+
+pool: 
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - name: adminServer
+    value: admin-server
+  - name: apiGateway
+    value: api-gateway
+  - name: customerService
+    value: customers-service
+  - name: vetsService
+    value: vets-service
+  - name: visitsService
+    value: visits-service
+  - name: apiGatewayJar
+    value: "spring-petclinic-api-gateway/target/api-gateway-3.0.1.jar"
+  - name: adminServerJar
+    value: "spring-petclinic-admin-server/target/admin-server-3.0.1.jar"
+  - name: customersServiceJar
+    value: "spring-petclinic-customers-service/target/customers-service-3.0.1.jar"
+  - name: vetsServiceJar
+    value: "spring-petclinic-vets-service/target/vets-service-3.0.1.jar" 
+  - name: visitsServiceJar
+    value: "spring-petclinic-visits-service/target/visits-service-3.0.1.jar" 
+  - name: deployFirewallStandard
+    value: "false"
+  - name: destroyStandard
+    value: "true"
+  - name: region
+    value: "eastus"
+  - name: environment
+    value: "dev"
+  - name: jumpBoxUsername
+    value: "ltzadmin"
+  - name: mySQLAdminUsername
+    value: "mySqlAdmin"
+  - name : azureServiceConnection
+    value : 'scSub002'
+  - group : lza-dev
+  - name : workingDirectory
+    value : "Scenarios/ASA-Secure-Baseline/Bicep"
+  - name : deleteTemplateFile
+    value: "empty.bicep"
+  - name : createAgain
+    value: "true"
+  - name : spring_apps_rg  
+    value :  'rg-springlza-APPS'
+  - name : spring_apps_service_name
+    value : 'spring-springlza-dev-2qn6'
+  - name : destroyStandard
+    value: true
+
+resources:
+  repositories:
+  - repository: pet-clinic-microservices
+    type: github
+    endpoint: bry-devops
+    name: bry-devops/spring-petclinic-microservices
+    ref: refs/heads/azure
+
+stages:
+  - stage: provision_infrastructure
+    displayName: "Provision Infrastructure"
+    jobs:
+      - template : "templates/jobs/job-provision-infra.yaml"
+        parameters:
+            job : provision_hub_network
+            ephemeral : $(ephemeral)
+            servceConnection : $(azureServiceConnection)
+            deploymentNmame : $(deploymentName)
+            location : $(location)
+            templateFile : "02-Hub-Network-main.bicep"
+            paramFile : "main.parameters.json"
+            namePrefix : $(namePrefix)
+            servicePrincipalId : $(servicePrincipalId)
+            jumpHostPassword : $(jumpHostPassword)
+            workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
+
+  - stage: deploy_spring_app
+    displayName: "Deploy Petclinic Spring App"
+    dependsOn:  provision_infrastructure
+    #condition: succeeded()
+    #dependsOn: [provision_spoke_network, provision_sharedresources, provision_standard_sa]
+    jobs:
+    - job: deploy_pet_clinic_infra
+      displayName: "Deploy Pet Clinic Spring App"
+      steps:
+        - bash: echo 'Not implemented'
+
+  - stage: deprovision_infrastructure
+    displayName: "Deprovision Infrastrcture"
+    dependsOn: deploy_spring_app
+    condition: or(succeeded(),  failed())
+    jobs:
+    - job: destroy_hub_network
+      displayName: Destroy Hub Network
+      dependsOn: [destroy_spring_apps_standard, destroy_spoke_network]
+      condition: eq(variables['destroyStandard'], 'true')
+      steps:
+      - task: AzureCLI@2
+        displayName: "Destroy  Hub Network"
+        inputs:
+          azureSubscription: 'scSub002'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            resourceGroup=rg-$(namePrefix)-HUB
+            echo Deleting Resource Group: $resourceGroup
+            echo executing az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az deployment group create --template-file $(deleteTemplateFile) --resource-group $resourceGroup --mode complete
+            az group delete --name $resourceGroup -y
+          workingDirectory: $(workingDirectory)
