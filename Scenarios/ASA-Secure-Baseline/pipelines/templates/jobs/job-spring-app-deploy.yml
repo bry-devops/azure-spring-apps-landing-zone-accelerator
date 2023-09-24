@@ -19,7 +19,7 @@ jobs:
   - job: ${{parameters.jobName}}
     displayName: "Step: Deploy App - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
-    continueOnError: eq(parameters['ignoreError'], 'true')
+    continueOnError: eq(variables[${{parameters.ignoreError}}], 'true')
     steps:
     - task: AzureCLI@2
       inputs:
