@@ -4,7 +4,7 @@ parameters:
   - name : dependsOn
     type : object
   - name : ephemeral
-    type : Boolean 
+    type : boolean 
   - name : serviceConnection
     type : string 
   - name : resourceGroupName

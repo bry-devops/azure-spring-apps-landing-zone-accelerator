@@ -4,7 +4,7 @@ parameters:
   - name : dependsOn
     type : object
   - name : ignoreError
-    type : Boolean 
+    type : boolean 
   - name : serviceConnection
     type : string 
   - name : resourceGroupName
