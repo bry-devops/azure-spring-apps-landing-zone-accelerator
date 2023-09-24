@@ -1,22 +1,22 @@
 parameters:
-- name: jobName
-  type: string
-- name: ephemeral
-  type: boolean
-- name: serviceConnection
-  type: string
-- name: deploymentName
-  type: string
-- name: location
-  type: string
-- name: namePrefix
-  type: string
-- name: servicePrincipalId
-  type: string
-- name: jumpHostPassword
-  type: string
-- name: workingDirectory
-  type: string
+  - name: jobName
+    type: string
+  - name: ephemeral
+    type: boolean
+  - name: serviceConnection
+    type: string
+  - name: deploymentName
+    type: string
+  - name: location
+    type: string
+  - name: namePrefix
+    type: string
+  - name: servicePrincipalId
+    type: string
+  - name: jumpHostPassword
+    type: string
+  - name: workingDirectory
+    type: string
 jobs:
   - job: ${{parameters.jobName}}
   displayName: "Job: Provision Infrastructure - ${{parameters.jobName}}"
