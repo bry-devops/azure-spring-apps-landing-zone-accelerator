@@ -37,5 +37,5 @@ jobs:
         inlineScript: |
           echo 'This job is not implemented'
           echo 'Creating Spring App -- ${{parameters.appName}}'
-          az spring app create -n ${{parameters.appName}}) -g ${{parameters.resourceGroupName}} -s ${{parameters.springAppServiceName}} --runtime-version ${{parameters.runtime}} --instance-count ${{parameters.instanceCount}} -cpu ${{parameters.cpu}} --memory ${{parameters.memory}} --system-assigned true --assign-public-endpoint
+          az spring app create -n ${{parameters.appName}} -g ${{parameters.resourceGroupName}} -s ${{parameters.springAppServiceName}} --runtime-version ${{parameters.runtime}} --instance-count ${{parameters.instanceCount}} -cpu ${{parameters.cpu}} --memory ${{parameters.memory}} --system-assigned true --assign-public-endpoint
         workingDirectory: ${{parameters.workingDirectory}}

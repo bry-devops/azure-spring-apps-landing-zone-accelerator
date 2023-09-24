@@ -48,10 +48,6 @@ variables:
     value: "empty.bicep"
   - name: ephemeral
     value: false
-  - name: spring_apps_rg
-    value: 'rg-${{variables.namePrefix}}-APPS'
-  - name: spring_apps_service_name
-    value: 'rg-${{variables.namePrefix}}-apps-instance'
 
 
 resources:
@@ -157,8 +153,8 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
-          resourceGroupName: $(spring_apps_rg)
-          springAppServiceName: $(spring_apps_service_name)
+          resourceGroupName: rg-${{variables.namePrefix}}-APPS
+          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
           instanceCount: 1
           runtime: "java_17"
           cpu: 1
@@ -171,8 +167,8 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
-          resourceGroupName: $(spring_apps_rg)
-          springAppServiceName: $(spring_apps_service_name)
+          resourceGroupName: rg-${{variables.namePrefix}}-APPS
+          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
           instanceCount: 1
           runtime: "java_17"
           cpu: 1
@@ -212,8 +208,8 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
-          resourceGroupName: $(spring_apps_rg)
-          springAppServiceName: $(spring_apps_service_name)
+          resourceGroupName: rg-${{variables.namePrefix}}-APPS
+          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
           artifactPath: $(Pipeline.Workspace)/$(apiGatewayJar)
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
@@ -222,8 +218,8 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
-          resourceGroupName: $(spring_apps_rg)
-          springAppServiceName: $(spring_apps_service_name)
+          resourceGroupName: rg-${{variables.namePrefix}}-APPS
+          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
           artifactPath: $(Pipeline.Workspace)/$(customersServiceJar)
 
 
