@@ -150,7 +150,7 @@ stages:
     condition: not(or(failed(), canceled()))
     variables:
       - name: rgName 
-        value:  'rg-${{variables.namePrefix}}-APPS'
+        value:  'rg-$(namePrefix)-APPS"
     jobs:
       - template: templates/jobs/job-spring-app-create.yml
         parameters:
@@ -160,7 +160,7 @@ stages:
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
           resourceGroupName: ${{variables.rgName}}
-          springAppServiceName: 'rg-${{variables.namePrefix}}-apps-instance'
+          springAppServiceName: 'rg-$(namePrefix)-apps-instance'
           instanceCount: 1
           runtime: "java_17"
           cpu: 1
