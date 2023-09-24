@@ -15,19 +15,19 @@ parameters:
   - name : workingDirectory
     type : string 
 
-  - job: ${{parameters.jobName}}
-    displayName: "Job: Destroy Infrastructure - ${{parameters.jobName}}"
-    dependsOn: ${{parameters.dependson}}
-    condition: eq(variables[${{parameters.ephemeral}}], 'true')
-    steps:
-    - task: AzureCLI@2
-      inputs:
-        azureSubscription: ${{parameters.serviceConnection}}
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          echo Deleting Resource Group: ${{parameters.resourceGroupName}}
-          echo executing az deployment group create --template-file ${{parameters.templateFile}} --resource-group ${{parameters.resourceGroupName}} --mode complete
-          az deployment group create --template-file ${{parameters.templateFile}} --resource-group ${{parameters.resourceGroupName}} --mode complete
-          az group delete --name ${{parameters.resourceGroupName}} -y
-        workingDirectory: ${{parameters.workingDirectory}}
+- job: ${{parameters.jobName}}
+  displayName: "Job: Destroy Infrastructure - ${{parameters.jobName}}"
+  dependsOn: ${{parameters.dependson}}
+  condition: eq(variables[${{parameters.ephemeral}}], 'true')
+  steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: ${{parameters.serviceConnection}}
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        echo Deleting Resource Group: ${{parameters.resourceGroupName}}
+        echo executing az deployment group create --template-file ${{parameters.templateFile}} --resource-group ${{parameters.resourceGroupName}} --mode complete
+        az deployment group create --template-file ${{parameters.templateFile}} --resource-group ${{parameters.resourceGroupName}} --mode complete
+        az group delete --name ${{parameters.resourceGroupName}} -y
+      workingDirectory: ${{parameters.workingDirectory}}
