@@ -206,7 +206,7 @@ stages:
               artifactName: 'drop'
               targetPath: '$(Pipeline.Workspace)'
               
-          - template: tempates/steps/step-deploy-spring-app.yml
+          - template: templates/steps/step-deploy-spring-app.yml
             parameters:
               jobName: "create_apigateway"
               dependson: []
@@ -216,7 +216,7 @@ stages:
               resourceGroupName: $(spring_apps_rg)
               springAppServiceName: $(spring_apps_service_name)
               artifactPath: $(Pipeline.Workspace)/$(apiGatewayJar)
-          - template: tempates/steps/step-deploy-spring-app.yml
+          - template: templates/steps/step-deploy-spring-app.yml
             parameters:
               jobName: "deploy_customers_service"
               dependson: []
