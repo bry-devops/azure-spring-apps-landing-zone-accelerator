@@ -13,14 +13,45 @@ parameters:
     type : string
   - name : springAppServiceName
     type : string
-  - name : artifactPath
+  - name : parameters.targetArtifact
     type: string
+  - name : buildType
+    type : string
+  - name : projectId
+    type : string 
+  - name : definitinId
+    type: string 
+  - name : artifactName 
+    type: string 
+  - name : buildVersionToDownload
+    type: string
+
 jobs:
   - job: ${{parameters.jobName}}
     displayName: "Job: Deploy App - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
     continueOnError: true
     steps:
+    - task: AzureCLI@2
+      displayName: Install Azure CLI Spring Extension
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptLocation: inlineScript
+        scriptType: bash
+        inlineScript: |
+          set -eu
+          az extension add --name spring -y
+          az spring list -o table
+        addSpnToEnvironment: true 
+    - task: DownloadPipelineArtifact@2
+      displayName: "download build-release artifacts"
+      inputs:
+        buildType: ${{parameters.buildType}}
+        project: ${{parameters.projectId}}
+        definition: ${{parameters.definitionId}}
+        buildVersionToDownload: ${{parameters.buildVersionToDownload}}
+        artifactName: ${{parameters.artifactName}}
+        targetPath: '$(Pipeline.Workspace)'
     - task: AzureCLI@2
       inputs:
         azureSubscription: ${{parameters.serviceConnection}}
@@ -32,6 +63,6 @@ jobs:
             --resource-group ${{parameters.resourceGroupName}} \
             --service ${{parameters.springAppServiceName}} \
             --name ${{parameters.appName}} \
-            --artifact-path ${{parameters.artifactPath}} \
+            --artifact-path $(Pipeline.Workspace)/${{parameters.targetArtifact}} \
             --env SPRING_PROFILES_ACTIVE=passwordless
         addSpnToEnvironment: true 

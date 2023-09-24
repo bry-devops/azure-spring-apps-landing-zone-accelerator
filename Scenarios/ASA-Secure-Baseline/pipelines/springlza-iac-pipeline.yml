@@ -179,34 +179,7 @@ stages:
           runtime: "java_17"
           cpu: 1
           memory: 2Gi
-          workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"
-      - job: deploy_pre_setup
-        displayName: 'Job: Pre Setup to Deploy Pet Clinic Microservices'
-        dependsOn: [create_apigateway, create_customers_service]
-        pool:
-          vmImage: "ubuntu-latest"
-        steps:
-          - task: AzureCLI@2
-            displayName: Install Azure CLI Spring Extension
-            inputs:
-              azureSubscription: $(azureServiceConnection)
-              scriptLocation: inlineScript
-              scriptType: bash
-              inlineScript: |
-                set -eu
-                az extension add --name spring -y
-                az spring list -o table
-              addSpnToEnvironment: true
-          - task: DownloadPipelineArtifact@2
-            displayName: "download build-release artifacts"
-            inputs:
-              buildType: 'specific'
-              project: '890a29bf-c2f0-456a-b797-d55b19415604'
-              definition: '32'
-              buildVersionToDownload: 'latest'
-              artifactName: 'drop'
-              targetPath: '$(Pipeline.Workspace)'
-              
+          workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"         
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
           jobName: "deploy_apigateway"
@@ -216,7 +189,12 @@ stages:
           appName: "api-gateway"
           resourceGroupName:  "rg-$(namePrefix)-APPS"
           springAppServiceName: "rg-$(namePrefix)-apps-instance"
-          artifactPath: $(Pipeline.Workspace)/$(apiGatewayJar)
+          targetArtifact: $(apiGatewayJar)
+          buildType: 'specific'
+          project: '890a29bf-c2f0-456a-b797-d55b19415604'
+          definition: '32'
+          buildVersionToDownload: 'latest'
+          artifactName: 'drop'
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
           jobName: "deploy_customers_service"
@@ -226,9 +204,12 @@ stages:
           appName: "customers-service"
           resourceGroupName: "rg-$(namePrefix)-APPS"
           springAppServiceName: "rg-$(namePrefix)-apps-instance"
-          artifactPath: $(Pipeline.Workspace)/$(customersServiceJar)
-
-
+          targetArtifact: $(customersServiceJar)
+          buildType: 'specific'
+          project: '890a29bf-c2f0-456a-b797-d55b19415604'
+          definition: '32'
+          buildVersionToDownload: 'latest'
+          artifactName: 'drop'
 
   - stage: deprovision_infrastructure
     displayName: "Deprovision Infrastrcture"
