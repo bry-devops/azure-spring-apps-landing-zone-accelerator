@@ -159,7 +159,7 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
-          resourceGroupName: 'rg-${{variables.namePrefix}}-APPS'
+          resourceGroupName: ${{variables.rgName}}
           springAppServiceName: 'rg-${{variables.namePrefix}}-apps-instance'
           instanceCount: 1
           runtime: "java_17"
