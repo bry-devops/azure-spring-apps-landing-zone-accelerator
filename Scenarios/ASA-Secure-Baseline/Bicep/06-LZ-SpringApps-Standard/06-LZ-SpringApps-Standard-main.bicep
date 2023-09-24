@@ -3,11 +3,6 @@ targetScope = 'subscription'
 /******************************/
 /*         PARAMETERS         */
 /******************************/
-@allowed([
-  'Standard'
-  'Enterprise'
-])
-param tier string
 
 //Resource Names - Override these in the parameters.json file to match your organization's naming conventions
 @description('Name of the Azure Firewall. Specify this value in the parameters.json file to override this default.')
@@ -207,7 +202,7 @@ module firewall '05-Hub-AzureFirewall/main.bicep' = {
   }
 }
 
-module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' = {
+module springAppsStandard 'main.bicep' = {
   name: '${timeStamp}-spring-apps-standard'
   params: {
     appGwSubnetPrefix: appGwSubnetPrefix

@@ -70,11 +70,26 @@ stages:
       - template : "templates/jobs/job-provision-infra.yml"
         parameters:
           jobName : provision_hub_network
+          dependson: []
           ephemeral : true
           serviceConnection : $(azureServiceConnection)
           deploymentName : $(deploymentName)
           location : $(location)
           templateFile : "02-Hub-Network/02-Hub-Network-main.bicep"
+          paramFile : "main.parameters.json"
+          namePrefix : $(namePrefix)
+          servicePrincipalId : $(servicePrincipalId)
+          jumpHostPassword : $(jumpHostPassword)
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
+      - template : "templates/jobs/job-provision-infra.yml"
+        parameters:
+          jobName : provision_spoke_network
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          deploymentName : $(deploymentName)
+          location : $(location)
+          templateFile : "03-LZ-Network/03-LZ-Network-main.bicep"
           paramFile : "main.parameters.json"
           namePrefix : $(namePrefix)
           servicePrincipalId : $(servicePrincipalId)
@@ -100,8 +115,18 @@ stages:
     jobs:
       - template : templates/jobs/job-destroy-infra.yaml
         parameters:
-          jobName : 'destroy_hub_network'
+          jobName : 'destroy_spoke_network'
           dependson : []
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          resourceGroupName : "rg-$(namePrefix)-SPOKE"
+          templateFile : "empty.bicep"
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
+      - template : templates/jobs/job-destroy-infra.yaml
+        parameters:
+          jobName : 'destroy_hub_network'
+          dependson : [deploy_spring_app]
           ephemeral : true
           serviceConnection : $(azureServiceConnection)
           resourceGroupName : "rg-$(namePrefix)-hub"

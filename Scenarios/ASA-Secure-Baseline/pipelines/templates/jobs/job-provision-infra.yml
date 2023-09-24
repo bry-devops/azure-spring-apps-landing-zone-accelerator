@@ -1,6 +1,8 @@
 parameters:
   - name: jobName
     type: string
+  - name : dependson 
+    type: object
   - name: ephemeral
     type: boolean
   - name: serviceConnection
@@ -24,6 +26,7 @@ parameters:
 jobs:
   - job: "${{parameters.jobName}}"
     displayName: "Job: Provision Infrastructure - ${{parameters.jobName}}"
+    dpendsOn: ${{parameters.dependson}}
     condition: eq(variables['ephemeral'], 'true')
     steps:
       - checkout: self
