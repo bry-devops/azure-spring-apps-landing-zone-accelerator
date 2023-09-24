@@ -11,6 +11,10 @@ parameters:
     type: string
   - name: namePrefix
     type: string
+  - name: templateFile
+    type: string
+  - name: paramFile
+    type: string
   - name: servicePrincipalId
     type: string
   - name: jumpHostPassword
