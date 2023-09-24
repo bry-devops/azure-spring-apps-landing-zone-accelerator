@@ -13,7 +13,7 @@ parameters:
     type : string
   - name : springAppServiceName
     type : string
-  - name : instance-count
+  - name : instanceCount
     type: string
   - name : runtime
     type: string

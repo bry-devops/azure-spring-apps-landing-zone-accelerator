@@ -164,7 +164,6 @@ stages:
           runtime: "java_17"
           cpu: 1
           memory: 2
-          templateFile: ""
           workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"
       - template: templates/jobs/job-spring-app-create.yml
         parameters:
