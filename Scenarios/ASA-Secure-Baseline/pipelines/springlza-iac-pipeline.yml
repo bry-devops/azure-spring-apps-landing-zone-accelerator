@@ -191,8 +191,8 @@ stages:
           springAppServiceName: "rg-$(namePrefix)-apps-instance"
           targetArtifact: $(apiGatewayJar)
           buildType: 'specific'
-          project: '890a29bf-c2f0-456a-b797-d55b19415604'
-          definition: '32'
+          projectId: '890a29bf-c2f0-456a-b797-d55b19415604'
+          definitionId: '32'
           buildVersionToDownload: 'latest'
           artifactName: 'drop'
       - template: templates/jobs/job-spring-app-deploy.yml
@@ -206,8 +206,8 @@ stages:
           springAppServiceName: "rg-$(namePrefix)-apps-instance"
           targetArtifact: $(customersServiceJar)
           buildType: 'specific'
-          project: '890a29bf-c2f0-456a-b797-d55b19415604'
-          definition: '32'
+          projectId: '890a29bf-c2f0-456a-b797-d55b19415604'
+          definitionId: '32'
           buildVersionToDownload: 'latest'
           artifactName: 'drop'
 

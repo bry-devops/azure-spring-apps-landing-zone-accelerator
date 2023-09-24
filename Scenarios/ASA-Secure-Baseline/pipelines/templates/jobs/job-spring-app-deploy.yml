@@ -13,7 +13,7 @@ parameters:
     type : string
   - name : springAppServiceName
     type : string
-  - name : parameters.targetArtifact
+  - name : targetArtifact
     type: string
   - name : buildType
     type : string
