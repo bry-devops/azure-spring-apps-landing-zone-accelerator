@@ -18,7 +18,7 @@ parameters:
   - name: workingDirectory
     type: string
 jobs:
-  - job: ${{parameters.jobName}}
+  -job: ${{parameters.jobName}}
   displayName: "Job: Provision Infrastructure - ${{parameters.jobName}}"
   condition: eq(variables['ephemeral'], 'true')
   steps:
