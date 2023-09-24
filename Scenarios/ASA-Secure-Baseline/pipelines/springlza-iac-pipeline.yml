@@ -97,6 +97,50 @@ stages:
           jumpHostPassword : $(jumpHostPassword)
           workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
 
+      - template : "templates/jobs/job-provision-infra.yml"
+        parameters:
+          jobName : provision_sharedresources
+          dependson: [provision_spoke_network]
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          deploymentName : $(deploymentName)
+          location : $(location)
+          templateFile : "04-LZ-SharedResources/04-LZ-SharedResources-main.bicep"
+          paramFile : "main.parameters.json"
+          namePrefix : $(namePrefix)
+          servicePrincipalId : $(servicePrincipalId)
+          jumpHostPassword : $(jumpHostPassword)
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
+      - template : "templates/jobs/job-provision-infra.yml"
+        parameters:
+          jobName : provision_hub_firewall
+          dependson: [provision_hub_network, provision_sharedresources]
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          deploymentName : $(deploymentName)
+          location : $(location)
+          templateFile : "05-Hub-AzureFirewall/05-Hub-AzureFirewall-main.bicep"
+          paramFile : "main.parameters.json"
+          namePrefix : $(namePrefix)
+          servicePrincipalId : $(servicePrincipalId)
+          jumpHostPassword : $(jumpHostPassword)
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
+      - template : "templates/jobs/job-provision-infra.yml"
+        parameters:
+          jobName : provision_standard_sa
+          dependson: [provision_hub_network, provision_sharedresources, provision_hub_firewall]
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          deploymentName : $(deploymentName)
+          location : $(location)
+          templateFile : " 06-LZ-SpringApps-Standard/06-LZ-SpringApps-Standard-main.bicep"
+          paramFile : "main.parameters.json"
+          namePrefix : $(namePrefix)
+          servicePrincipalId : $(servicePrincipalId)
+          jumpHostPassword : $(jumpHostPassword)
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
 
   - stage: deploy_spring_app
     displayName: "Deploy Petclinic Spring App"
@@ -114,22 +158,62 @@ stages:
     dependsOn: deploy_spring_app
     condition: or(succeeded(),  failed())
     jobs:
+      - template : templates/jobs/job-echo-infra.yml
+        parameters:
+          jobName : 'destroy_pet_clinic_infra'
+          dependson : []
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          resourceGroupName : ""
+          templateFile : ""
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
+      - template : templates/jobs/job-destroy-infra.yml
+        parameters:
+          jobName : 'destroy_spring_apps_standard'
+          dependson : [destroy_pet_clinic_infra]
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          resourceGroupName : "rg-$(namePrefix)-APPS"
+          templateFile : "empty.bicep"
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
+      - template : templates/jobs/job-destroy-infra.yml
+        parameters:
+          jobName : 'destroy_hub_firewall'
+          dependson : [destroy_spring_apps_standard]
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          resourceGroupName : "rg-$(namePrefix)-HUB"
+          templateFile : "empty.bicep"
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
+      - template : templates/jobs/job-destroy-infra.yml
+        parameters:
+          jobName : 'destroy_shared_resources'
+          dependson : []
+          ephemeral : true
+          serviceConnection : $(azureServiceConnection)
+          resourceGroupName : "rg-$(namePrefix)-SHARED"
+          templateFile : "empty.bicep"
+          workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
+
       - template : templates/jobs/job-destroy-infra.yaml
         parameters:
           jobName : 'destroy_spoke_network'
-          dependson : []
+          dependson : [destroy_shared_resources]
           ephemeral : true
           serviceConnection : $(azureServiceConnection)
           resourceGroupName : "rg-$(namePrefix)-SPOKE"
           templateFile : "empty.bicep"
           workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
 
-      - template : templates/jobs/job-destroy-infra.yaml
+      - template : templates/jobs/job-destroy-infra.yml
         parameters:
           jobName : 'destroy_hub_network'
           dependson : [destroy_spoke_network]
           ephemeral : true
           serviceConnection : $(azureServiceConnection)
-          resourceGroupName : "rg-$(namePrefix)-hub"
+          resourceGroupName : "rg-$(namePrefix)-HUB"
           templateFile : "empty.bicep"
           workingDirectory : "Scenarios/ASA-Secure-Baseline/Bicep"
