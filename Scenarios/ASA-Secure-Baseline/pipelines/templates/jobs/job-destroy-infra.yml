@@ -4,7 +4,7 @@ parameters:
   - name : dependsOn
     type : object
   - name : ephemeral
-    type : boolean 
+    type : Boolean 
   - name : serviceConnection
     type : string 
   - name : resourceGroupName
@@ -17,7 +17,7 @@ jobs:
   - job: ${{parameters.jobName}}
     displayName: "Job: Destroy Infrastructure - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
-    condition: eq(variables[${{parameters.ephemeral}}], 'true')
+    condition: eq(parameters['ephemeral'], 'true')
     steps:
     - task: AzureCLI@2
       inputs:

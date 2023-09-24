@@ -4,7 +4,7 @@ parameters:
   - name : dependsOn
     type : object
   - name : ignoreError
-    type : boolean 
+    type : Boolean 
   - name : serviceConnection
     type : string 
   - name : resourceGroupName
@@ -27,7 +27,7 @@ jobs:
   - job: ${{parameters.jobName}}
     displayName: "Job: Create Spring App - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
-    continueOnError: eq(variables[${{parameters.ignoreError}}], 'true')
+    continueOnError: eq(parameters['ignoreError'], 'true')
     steps:
     - task: AzureCLI@2
       inputs:
