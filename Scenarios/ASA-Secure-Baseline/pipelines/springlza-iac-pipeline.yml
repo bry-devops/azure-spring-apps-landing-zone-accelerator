@@ -181,7 +181,7 @@ stages:
           workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"
       - job: deploy_pet_clinic_microservices
         displayName: Deploy Pet Clinic Microservices
-        dependsOn: [create_apigateway, create_customers_servic]
+        dependsOn: [create_apigateway, create_customers_service]
         pool:
           vmImage: "ubuntu-latest"
         steps:
