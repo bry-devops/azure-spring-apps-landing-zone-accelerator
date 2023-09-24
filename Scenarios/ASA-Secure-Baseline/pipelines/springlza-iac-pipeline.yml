@@ -163,7 +163,7 @@ stages:
       - template: templates/jobs/job-spring-app-create.yml
         parameters:
           jobName: "create_customers_service"
-          dependson: []
+          dependson: [create_apigateway]
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
@@ -174,8 +174,8 @@ stages:
           cpu: 1
           memory: 2
           workingDirectory: "Scenarios/ASA-Secure-Baseline/Bicep"
-      - job: deploy_pet_clinic_microservices
-        displayName: 'Job: Deploy Pet Clinic Microservices'
+      - job: deploy_pre_setup
+        displayName: 'Job: Pre Setup to Deploy Pet Clinic Microservices'
         dependsOn: [create_apigateway, create_customers_service]
         pool:
           vmImage: "ubuntu-latest"
@@ -204,7 +204,7 @@ stages:
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
           jobName: "deploy_apigateway"
-          dependson: [create_apigateway, deploy_pet_clinic_microservices]
+          dependson: [create_apigateway, deploy_pre_setup]
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
@@ -214,7 +214,7 @@ stages:
       - template: templates/jobs/job-spring-app-deploy.yml
         parameters:
           jobName: "deploy_customers_service"
-          dependson: [create_customers_service, deploy_pet_clinic_microservices]
+          dependson: [create_customers_service, deploy_pre_setup]
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
