@@ -19,7 +19,7 @@ parameters:
     type : string
   - name : projectId
     type : string 
-  - name : definitinId
+  - name : definitionId
     type: string 
   - name : artifactName 
     type: string 
