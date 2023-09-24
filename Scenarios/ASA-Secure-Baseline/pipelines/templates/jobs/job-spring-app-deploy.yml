@@ -15,10 +15,6 @@ parameters:
     type : string
   - name : artifactPath
     type: string
-  - name : jvmOptions
-    type : string
-  - name : workingDirectory
-    type : string 
 jobs:
   - job: ${{parameters.jobName}}
     displayName: "Step: Deploy App - ${{parameters.jobName}}"
