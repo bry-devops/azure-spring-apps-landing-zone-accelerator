@@ -69,7 +69,7 @@ stages:
     jobs:
       - template : "templates/jobs/job-provision-infra.yml"
         parameters:
-            job : provision_hub_network
+            jobName : provision_hub_network
             ephemeral : $(ephemeral)
             servceConnection : $(azureServiceConnection)
             deploymentNmame : $(deploymentName)
