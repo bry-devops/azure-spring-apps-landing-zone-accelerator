@@ -13,19 +13,15 @@ parameters:
     type : string
   - name : springAppServiceName
     type : string
-  - name : instance-count
+  - name : artifactPath
     type: string
-  - name : runtime
-    type: string
-  - name : cpu
+  - name : jvmOptions
     type : string
-  - name : memory
-    type : string 
   - name : workingDirectory
     type : string 
 jobs:
   - job: ${{parameters.jobName}}
-    displayName: "Job: Create Spring App - ${{parameters.jobName}}"
+    displayName: "Step: Deploy App - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
     continueOnError: eq(variables[${{parameters.ignoreError}}], 'true')
     steps:
@@ -35,7 +31,10 @@ jobs:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          echo 'This job is not implemented'
-          echo 'Creating Spring App -- ${{parameters.appName}}'
-          az spring app create -n ${{parameters.appName}}) -g ${{parameters.resourceGroupName}} -s ${{parameters.springAppServiceName}} --runtime-version ${{parameters.runtime}} --instance-count ${{parameters.instanceCount}} -cpu ${{parameters.cpu}}--memory ${{parameters.memory}} --system-assigned true --assign-public-endpoint
-        workingDirectory: ${{parameters.workingDirectory}}
+          az spring app deploy \
+            --resource-group ${{parameters.resourceGroupName}} \
+            --service ${{parameters.springAppServiceName}} \
+            --name ${{parameters.appName}} \
+            --artifact-path ${{parameters.artifactPath}} \
+            --env SPRING_PROFILES_ACTIVE=passwordless
+        addSpnToEnvironment: true 
