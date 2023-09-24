@@ -206,26 +206,26 @@ stages:
               artifactName: 'drop'
               targetPath: '$(Pipeline.Workspace)'
               
-        - template: templates/steps/step-deploy-spring-app.yml
-          parameters:
-            jobName: "create_apigateway"
-            dependson: []
-            ignoreError: true
-            serviceConnection: $(azureServiceConnection)
-            appName: "api-gateway"
-            resourceGroupName: $(spring_apps_rg)
-            springAppServiceName: $(spring_apps_service_name)
-            artifactPath: $(Pipeline.Workspace)/$(apiGatewayJar)
-        - template: templates/steps/step-deploy-spring-app.yml
-          parameters:
-            jobName: "deploy_customers_service"
-            dependson: []
-            ignoreError: true
-            serviceConnection: $(azureServiceConnection)
-            appName: "api-gateway"
-            resourceGroupName: $(spring_apps_rg)
-            springAppServiceName: $(spring_apps_service_name)
-            artifactPath: $(Pipeline.Workspace)/$(customersServiceJar)
+      - template: templates/jobs/job-spring-app-deploy.yml
+        parameters:
+          jobName: "create_apigateway"
+          dependson: []
+          ignoreError: true
+          serviceConnection: $(azureServiceConnection)
+          appName: "api-gateway"
+          resourceGroupName: $(spring_apps_rg)
+          springAppServiceName: $(spring_apps_service_name)
+          artifactPath: $(Pipeline.Workspace)/$(apiGatewayJar)
+      - template: templates/jobs/job-spring-app-deploy.yml
+        parameters:
+          jobName: "deploy_customers_service"
+          dependson: []
+          ignoreError: true
+          serviceConnection: $(azureServiceConnection)
+          appName: "api-gateway"
+          resourceGroupName: $(spring_apps_rg)
+          springAppServiceName: $(spring_apps_service_name)
+          artifactPath: $(Pipeline.Workspace)/$(customersServiceJar)
 
 
 
