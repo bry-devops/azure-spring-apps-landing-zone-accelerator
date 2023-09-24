@@ -205,6 +205,7 @@ stages:
               buildVersionToDownload: 'latest'
               artifactName: 'drop'
               targetPath: '$(Pipeline.Workspace)'
+              
           - template: tempates/steps/step-deploy-spring-app.yml
             parameters:
               jobName: "create_apigateway"
