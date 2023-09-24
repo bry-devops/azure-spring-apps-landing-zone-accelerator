@@ -30,7 +30,7 @@ variables:
   - name: deployFirewallStandard
     value: "false"
   - name: destroyStandard
-    value: "true"
+    value: true
   - name: region
     value: "eastus"
   - name: environment
@@ -47,11 +47,11 @@ variables:
   - name : deleteTemplateFile
     value: "empty.bicep"
   - name : ephemeral
-    value: "true"
+    value: true
   - name : spring_apps_rg  
-    value :  'rg-springlza-APPS'
+    value :  "rg-springlza-APPS"
   - name : spring_apps_service_name
-    value : 'spring-springlza-dev-2qn6'
+    value : "spring-springlza-dev-2qn6"
   - name : destroyStandard
     value: true
 
