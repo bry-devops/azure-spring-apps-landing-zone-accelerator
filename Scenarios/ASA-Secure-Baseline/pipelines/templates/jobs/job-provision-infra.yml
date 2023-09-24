@@ -19,16 +19,16 @@ parameters:
     type: string
 
 -job: "${{parameters.jobName}}"
-displayName: "Job: Provision Infrastructure - ${{parameters.jobName}}"
-condition: eq(variables['ephemeral'], 'true')
-steps:
-  - checkout: self
-  - task: AzureCLI@2
-    #displayName: "Provision Hub Network"
-    inputs:
-      azureSubscription: ${{parameters.serviceConnection}}
-      scriptType: "bash"
-      scriptLocation: "inlineScript"
-      inlineScript: |
-        az deployment sub create --name ${{parameters.deploymentName}} --location ${{parameters.location}} --template-file ${{parameters.templateFile}} --parameters ${{parameters.paramFile}} location=${{parameters.location}} namePrefix=${{parameters.namePrefix}} principalId=${{parameters.servicePrincipalId}} jumpHostPassword=${{parameters.jumpHostPassword}}
-      workingDirectory: ${{workingDirectory}
+  displayName: "Job: Provision Infrastructure - ${{parameters.jobName}}"
+  condition: eq(variables['ephemeral'], 'true')
+  steps:
+    - checkout: self
+    - task: AzureCLI@2
+      #displayName: "Provision Hub Network"
+      inputs:
+        azureSubscription: ${{parameters.serviceConnection}}
+        scriptType: "bash"
+        scriptLocation: "inlineScript"
+        inlineScript: |
+          az deployment sub create --name ${{parameters.deploymentName}} --location ${{parameters.location}} --template-file ${{parameters.templateFile}} --parameters ${{parameters.paramFile}} location=${{parameters.location}} namePrefix=${{parameters.namePrefix}} principalId=${{parameters.servicePrincipalId}} jumpHostPassword=${{parameters.jumpHostPassword}}
+        workingDirectory: ${{workingDirectory}
