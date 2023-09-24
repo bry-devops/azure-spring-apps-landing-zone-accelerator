@@ -1,6 +1,6 @@
 
 parameters:
-  - name : job
+  - name : jobName
     type : string 
   - name : dependsOn
     type : object
@@ -15,8 +15,8 @@ parameters:
   - name : workingDirectory
     type : string 
 
-  - job: ${{parameters.job}}
-    displayName: "Job: Destroy Infrastructure - ${{parameters.job}}"
+  - job: ${{parameters.jobName}}
+    displayName: "Job: Destroy Infrastructure - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
     condition: eq(variables[${{parameters.ephemeral}}], 'true')
     steps:
