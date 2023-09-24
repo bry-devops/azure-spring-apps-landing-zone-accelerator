@@ -3,7 +3,7 @@ parameters:
     type: string
   - name : dependson 
     type: object
-  - name: ephemeral
+  - name: skipProvision
     type: boolean
   - name: serviceConnection
     type: string
@@ -27,7 +27,7 @@ jobs:
   - job: "${{parameters.jobName}}"
     displayName: "Job: Provision Infrastructure - ${{parameters.jobName}}"
     dependsOn: ${{parameters.dependson}}
-    #condition: eq('${{ parameters.ephemeral }}', true)
+    condition: eq('${{ parameters.skipProvision }}', false)
     steps:
       - checkout: self
       - task: AzureCLI@2

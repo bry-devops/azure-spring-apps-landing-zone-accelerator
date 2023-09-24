@@ -48,6 +48,8 @@ variables:
     value: "empty.bicep"
   - name: ephemeral
     value: false
+  - name : skipProvision
+    value: true
 
 
 resources:
@@ -66,7 +68,7 @@ stages:
         parameters:
           jobName: provision_hub_network
           dependson: []
-          ephemeral: ${{variables.ephemeral}}
+          skipProvision: ${{variables.skipProvision}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -81,7 +83,7 @@ stages:
         parameters:
           jobName: provision_spoke_network
           dependson: [provision_hub_network]
-          ephemeral: ${{variables.ephemeral}}
+          skipProvision: ${{variables.skipProvision}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -96,7 +98,7 @@ stages:
         parameters:
           jobName: provision_sharedresources
           dependson: [provision_spoke_network]
-          ephemeral: ${{variables.ephemeral}}
+          skipProvision: ${{variables.skipProvision}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -111,7 +113,7 @@ stages:
         parameters:
           jobName: provision_hub_firewall
           dependson: [provision_hub_network, provision_sharedresources]
-          ephemeral: ${{variables.ephemeral}}
+          skipProvision: ${{variables.skipProvision}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -131,7 +133,7 @@ stages:
               provision_sharedresources,
               provision_hub_firewall,
             ]
-          ephemeral: ${{variables.ephemeral}}
+          skipProvision: ${{variables.skipProvision}}
           serviceConnection: $(azureServiceConnection)
           deploymentName: $(deploymentName)
           location: $(location)
@@ -145,6 +147,7 @@ stages:
   - stage: deploy_spring_app
     displayName: "Deploy Petclinic Spring App"
     dependsOn: provision_infrastructure
+    condition: not(or(failed(), canceled()))
     jobs:
       - template: templates/jobs/job-spring-app-create.yml
         parameters:
