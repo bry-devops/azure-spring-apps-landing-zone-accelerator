@@ -3,12 +3,6 @@ targetScope = 'subscription'
 /******************************/
 /*         PARAMETERS         */
 /******************************/
-@allowed([
-  'Standard'
-  'Enterprise'
-])
-param tier string
-
 //Resource Names - Override these in the parameters.json file to match your organization's naming conventions
 @description('Name of the Azure Firewall. Specify this value in the parameters.json file to override this default.')
 param azureFirewallName string = 'fw-${namePrefix}'
