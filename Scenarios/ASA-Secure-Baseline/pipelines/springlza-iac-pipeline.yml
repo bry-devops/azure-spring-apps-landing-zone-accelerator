@@ -150,7 +150,7 @@ stages:
     condition: not(or(failed(), canceled()))
     variables:
       - name: rgName 
-        value:  'rg-$(namePrefix)-APPS"
+        value:  "rg-$(namePrefix)-APPS"
     jobs:
       - template: templates/jobs/job-spring-app-create.yml
         parameters:
@@ -160,7 +160,7 @@ stages:
           serviceConnection: $(azureServiceConnection)
           appName: "api-gateway"
           resourceGroupName: ${{variables.rgName}}
-          springAppServiceName: $(rgName)
+          springAppServiceName: "rg-$(namePrefix)-apps-instance"
           instanceCount: 1
           runtime: "java_17"
           cpu: 1
@@ -173,8 +173,8 @@ stages:
           ignoreError: true
           serviceConnection: $(azureServiceConnection)
           appName: "customers-service"
-          resourceGroupName: "rg-${{variables.namePrefix}}-APPS"
-          springAppServiceName: "rg-${{variables.namePrefix}}-apps-instance"
+          resourceGroupName: rg-${{variables.namePrefix}}-APPS
+          springAppServiceName: rg-${{variables.namePrefix}}-apps-instance
           instanceCount: 1
           runtime: "java_17"
           cpu: 1
