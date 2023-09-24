@@ -1,0 +1,41 @@
+parameters:
+  - name : jobName
+    type : string 
+  - name : dependsOn
+    type : object
+  - name : ignoreError
+    type : boolean 
+  - name : serviceConnection
+    type : string 
+  - name : resourceGroupName
+    type : string
+  - name : appName
+    type : string
+  - name : springAppServiceName
+    type : string
+  - name : instance-count
+    type: string
+  - name : runtime
+    type: string
+  - name : cpu
+    type : string
+  - name : memory
+    type : string 
+  - name : workingDirectory
+    type : string 
+jobs:
+  - job: ${{parameters.jobName}}
+    displayName: "Job: Create Spring App - ${{parameters.jobName}}"
+    dependsOn: ${{parameters.dependson}}
+    continueOnError: eq(variables[${{parameters.ignoreError}}], 'true')
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: ${{parameters.serviceConnection}}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo 'This job is not implemented'
+          echo 'Creating Spring App -- ${{parameters.appName}}'
+          az spring app create -n ${{parameters.appName}}) -g ${{parameters.resourceGroupName}} -s ${{parameters.springAppServiceName}} --runtime-version ${{parameters.runtime}} --instance-count ${{parameters.instanceCount}} -cpu ${{parameters.cpu}}--memory ${{parameters.memory}} --system-assigned true --assign-public-endpoint
+        workingDirectory: ${{parameters.workingDirectory}}
