@@ -20,21 +20,21 @@ parameters:
   - name : workingDirectory
     type : string 
 steps:
-- step: ${{parameters.jobName}}
-  displayName: "Step: Deploy App - ${{parameters.jobName}}"
-  dependsOn: ${{parameters.dependson}}
-  continueOnError: eq(variables[${{parameters.ignoreError}}], 'true')
-  steps:
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: ${{parameters.serviceConnection}}
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        az spring app deploy \
-          --resource-group ${{parameters.resourceGroupName}} \
-          --service ${{parameters.springAppServiceName}} \
-          --name ${{parameters.appName}} \
-          --artifact-path ${{parameters.artifactPath}} \
-          --env SPRING_PROFILES_ACTIVE=passwordless
-      addSpnToEnvironment: true 
+  - step: ${{parameters.jobName}}
+    displayName: "Step: Deploy App - ${{parameters.jobName}}"
+    dependsOn: ${{parameters.dependson}}
+    continueOnError: eq(variables[${{parameters.ignoreError}}], 'true')
+    -script: 
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: ${{parameters.serviceConnection}}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az spring app deploy \
+            --resource-group ${{parameters.resourceGroupName}} \
+            --service ${{parameters.springAppServiceName}} \
+            --name ${{parameters.appName}} \
+            --artifact-path ${{parameters.artifactPath}} \
+            --env SPRING_PROFILES_ACTIVE=passwordless
+        addSpnToEnvironment: true 
